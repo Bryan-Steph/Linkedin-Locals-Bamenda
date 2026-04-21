@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkedIn Locals Bamenda — Beyond The Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,200..900;1,9..40,200..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!--
+=======================================================
+  EMAIL SETUP — 2 free services, no backend required
+=======================================================
+  1. FORMSPREE (org receives registrations as email):
+     • Go to https://formspree.io → sign up free
+     • Create a new form → copy your Form ID
+     • Replace "YOUR_FORMSPREE_ID" in the JS below
+
+  2. EMAILJS (sends confirmation email to attendee):
+     • Go to https://emailjs.com → sign up (200 free/month)
+     • Add Gmail → note Service ID
+     • Create template with variables:
+       {{to_name}}, {{to_email}}, {{ticket_tier}},
+       {{ticket_price}}, {{event_date}}, {{event_venue}}
+     • Note Template ID and Public Key
+     • Replace the 3 placeholders in JS below
+=======================================================
+-->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+:root{
+  --blue:#0095F5;--blue2:#29ABE2;
+  --lime:#84F52A;
+  --white:#FFFFFF;--dark:#050A14;--dark2:#080F1E;--dark3:#0D1829;
+  --fb:'Bricolage Grotesque',sans-serif;--fs:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:var(--lime);border-radius:2px;}
+body{font-family:var(--fs);background:var(--dark);color:var(--white);overflow-x:hidden;}
+img{display:block;max-width:100%;}
+a{text-decoration:none;color:inherit;}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:10px;height:10px;background:var(--lime);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .25s,height .25s;}
+#cur-r{position:fixed;width:34px;height:34px;border:1.5px solid rgba(132,245,42,.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s;}
+#cur.x{width:18px;height:18px;}
+#cur-r.x{width:52px;height:52px;border-color:var(--lime);}
+@media(max-width:768px){#cur,#cur-r{display:none;}}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:14px 44px;display:flex;align-items:center;justify-content:space-between;gap:20px;transition:all .4s;}
+nav.sc{background:rgba(5,10,20,.9);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border-bottom:1px solid rgba(255,255,255,.06);padding:10px 44px;}
+.n-logo{height:50px;width:auto;object-fit:contain;flex-shrink:0;filter:brightness(1.05);}
+.n-pill{display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.05);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.11);border-radius:100px;padding:5px 6px;transition:all .4s;}
+nav.sc .n-pill{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);}
+.n-pill a{font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.6);padding:8px 16px;border-radius:100px;transition:color .25s,background .25s;white-space:nowrap;}
+.n-pill a:hover{color:var(--white);background:rgba(255,255,255,.07);}
+.n-right{display:flex;align-items:center;gap:12px;}
+.n-cta{display:inline-flex;align-items:center;gap:8px;background:var(--lime);color:var(--dark);padding:10px 22px;border-radius:100px;font-family:var(--fb);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:transform .3s,box-shadow .3s;white-space:nowrap;cursor:pointer;border:none;}
+.n-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(132,245,42,.36);}
+.ham{display:none;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;padding:6px;width:36px;height:36px;border-radius:8px;transition:background .25s;}
+.ham:hover{background:rgba(255,255,255,.06);}
+.ham span{width:22px;height:2px;background:var(--white);border-radius:2px;display:block;transition:all .32s cubic-bezier(.16,1,.3,1);transform-origin:center;}
+.ham.o span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.ham.o span:nth-child(2){opacity:0;transform:scaleX(0);}
+.ham.o span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mob-menu{position:fixed;inset:0;z-index:400;background:rgba(5,10,20,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transform:translateX(100%);transition:transform .42s cubic-bezier(.16,1,.3,1);}
+.mob-menu.o{transform:translateX(0);}
+.mob-menu a{font-family:var(--fb);font-size:clamp(28px,9vw,40px);font-weight:800;color:rgba(255,255,255,.72);letter-spacing:-.02em;padding:10px 28px;border-radius:12px;transition:color .25s,background .25s;width:80%;text-align:center;}
+.mob-menu a:hover{color:var(--white);background:rgba(255,255,255,.04);}
+.mob-cta-btn{margin-top:20px;background:var(--lime)!important;color:var(--dark)!important;padding:16px 48px!important;border-radius:100px!important;font-size:16px!important;width:auto!important;}
+.mob-div{width:40px;height:1.5px;background:rgba(255,255,255,.08);margin:6px 0;}
+
+/* Mobile nav: floating glassmorphic pill */
+@media(max-width:900px){
+  .n-pill,.n-cta{display:none;}
+  .ham{display:flex;}
+  nav{top:10px;left:12px;right:12px;border-radius:16px;background:rgba(5,12,25,.82)!important;backdrop-filter:blur(24px)!important;-webkit-backdrop-filter:blur(24px)!important;border:1px solid rgba(255,255,255,.1);box-shadow:0 0 28px rgba(0,149,245,.12),0 4px 16px rgba(0,0,0,.3);padding:12px 20px;}
+  nav.sc{background:rgba(5,10,20,.92)!important;border-color:rgba(255,255,255,.13);}
+}
+
+/* ── HERO ── */
+#hero{min-height:100vh;position:relative;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:90px 60px 80px;overflow:hidden;gap:40px;}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);pointer-events:none;animation:orb-f 9s ease-in-out infinite;}
+.o1{width:550px;height:550px;background:rgba(0,149,245,.2);top:-120px;right:-80px;}
+.o2{width:350px;height:350px;background:rgba(132,245,42,.1);bottom:0;left:5%;animation-delay:-4s;}
+.o3{width:280px;height:280px;background:rgba(0,149,245,.12);top:50%;left:52%;animation-delay:-7s;}
+@keyframes orb-f{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(25px,-20px) scale(1.06);}66%{transform:translate(-14px,14px) scale(.94);}}
+.h-ghost{position:absolute;top:50%;right:-20px;transform:translateY(-50%) rotate(90deg) translateX(50%);font-family:var(--fb);font-size:clamp(70px,11vw,150px);font-weight:900;letter-spacing:-.04em;white-space:nowrap;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.04);pointer-events:none;user-select:none;z-index:0;}
+.hgl{position:absolute;background:rgba(255,255,255,.025);pointer-events:none;}
+.hgl-v{width:1px;top:0;bottom:0;}
+.hgl-1{left:28%;}
+.hgl-2{left:62%;}
+.h-content{position:relative;z-index:2;}
+.h-badge{display:inline-flex;align-items:center;gap:9px;background:rgba(132,245,42,.08);border:1px solid rgba(132,245,42,.25);border-radius:100px;padding:7px 20px;margin-bottom:28px;}
+.h-bdot{width:7px;height:7px;background:var(--lime);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.5);}}
+.h-badge span{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--lime);}
+.h-kicker{font-family:var(--fb);font-size:clamp(11px,1.3vw,14px);font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--blue2);margin-bottom:12px;opacity:0;transform:translateY(18px);animation:fu .7s forwards .2s;}
+.h-title{font-family:var(--fb);font-size:clamp(48px,8.5vw,118px);font-weight:900;line-height:.88;letter-spacing:-.05em;margin-bottom:18px;opacity:0;transform:translateY(28px);animation:fu .9s forwards .4s;}
+.h-title .l1{display:block;color:var(--white);}
+.h-title .l2{display:block;color:var(--blue);}
+.h-theme{display:inline-block;font-family:var(--fb);font-size:clamp(15px,2.4vw,30px);font-weight:700;font-style:italic;background:linear-gradient(135deg,var(--lime),#5FC617);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:28px;opacity:0;transform:translateY(18px);animation:fu .8s forwards .6s;}
+.h-meta{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:36px;opacity:0;transform:translateY(18px);animation:fu .8s forwards .8s;}
+.h-mi{display:flex;align-items:center;gap:8px;}
+.h-mi i{color:var(--lime);font-size:13px;width:13px;}
+.h-mi span{font-size:13px;color:rgba(255,255,255,.68);font-weight:500;}
+.h-ctas{display:flex;gap:14px;flex-wrap:wrap;opacity:0;transform:translateY(18px);animation:fu .8s forwards 1s;}
+.btn-p{display:inline-flex;align-items:center;gap:10px;background:var(--lime);color:var(--dark);padding:15px 30px;border-radius:100px;font-family:var(--fb);font-weight:700;font-size:14px;transition:all .3s;border:none;cursor:pointer;}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(132,245,42,.38);background:#91FF33;}
+.btn-s{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.05);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:var(--white);padding:14px 30px;border-radius:100px;font-family:var(--fb);font-weight:600;font-size:14px;transition:all .3s;border:1.5px solid rgba(255,255,255,.18);cursor:pointer;}
+.btn-s:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.44);transform:translateY(-3px);}
+.scroll-hint{position:absolute;bottom:30px;left:60px;z-index:2;display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.28);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:0;animation:fu .8s forwards 1.4s;}
+.s-mouse{width:20px;height:30px;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;display:flex;justify-content:center;padding-top:5px;}
+.s-dot{width:3px;height:6px;background:var(--lime);border-radius:2px;animation:sd 2s ease-in-out infinite;}
+@keyframes sd{0%,100%{transform:translateY(0);opacity:1;}80%{transform:translateY(8px);opacity:0;}}
+@keyframes fu{to{opacity:1;transform:translateY(0);}}
+
+/* ── HERO STACKED CARDS ── */
+.h-cards{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:420px;opacity:0;transform:translateX(30px);animation:fu .9s forwards .7s;}
+.h-card-deck{position:relative;width:100%;max-width:340px;height:370px;cursor:pointer;}
+.hc{position:absolute;inset:0;background:rgba(255,255,255,.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:26px 24px;transition:all .7s cubic-bezier(.16,1,.3,1);}
+.hc[data-pos="0"]{transform:translateY(0) rotate(0deg) scale(1);z-index:4;opacity:1;border-color:rgba(0,149,245,.3);}
+.hc[data-pos="1"]{transform:translateY(14px) rotate(3deg) scale(0.96);z-index:3;opacity:.65;}
+.hc[data-pos="2"]{transform:translateY(26px) rotate(-2deg) scale(0.92);z-index:2;opacity:.45;}
+.hc[data-pos="3"]{transform:translateY(36px) rotate(1.5deg) scale(0.88);z-index:1;opacity:.28;}
+.hc-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:14px;}
+.hc-label{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:7px;}
+.hc-title{font-family:var(--fb);font-size:20px;font-weight:800;line-height:1.15;letter-spacing:-.02em;margin-bottom:10px;}
+.hc-body{font-size:13px;line-height:1.65;color:rgba(255,255,255,.52);}
+.hc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+.hc-tag{font-size:10px;font-weight:600;padding:4px 10px;border-radius:100px;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.55);}
+.hc-prices{margin-top:12px;display:flex;flex-direction:column;gap:6px;}
+.hc-prow{display:flex;align-items:baseline;gap:8px;}
+.hc-price{font-family:var(--fb);font-weight:800;color:var(--lime);}
+.hc-tier{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.36);}
+.hc-dots{display:flex;gap:7px;margin-top:20px;}
+.hc-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s;cursor:pointer;}
+.hc-dot.on{width:18px;border-radius:3px;background:var(--blue);}
+
+@media(max-width:1024px){#hero{grid-template-columns:1fr;padding:100px 40px 80px;}.h-cards{display:none;}.scroll-hint{left:40px;}.hgl{display:none;}}
+@media(max-width:768px){#hero{padding:90px 24px 80px;}.h-ghost{display:none;}.scroll-hint{left:24px;}}
+
+/* ── MARQUEE ── */
+.mq{background:var(--blue);padding:12px 0;overflow:hidden;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);}
+.mq-t{display:flex;animation:mq 36s linear infinite;white-space:nowrap;}
+.mq-i{display:inline-flex;align-items:center;gap:16px;padding:0 24px;font-family:var(--fb);font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);white-space:nowrap;}
+.mq-d{width:5px;height:5px;background:var(--lime);border-radius:50%;flex-shrink:0;}
+@keyframes mq{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ── UTILITIES ── */
+.s-lbl{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--lime);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.s-lbl::before{content:'';width:28px;height:1.5px;background:var(--lime);display:block;flex-shrink:0;}
+.sec-t{font-family:var(--fb);font-size:clamp(26px,4.5vw,52px);font-weight:800;line-height:1.05;letter-spacing:-.03em;}
+.s-bg{position:absolute;font-family:var(--fb);font-size:clamp(90px,16vw,220px);font-weight:900;letter-spacing:-.06em;white-space:nowrap;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.035);pointer-events:none;user-select:none;z-index:0;}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .72s,transform .72s;}
+.rv.vis{opacity:1;transform:translateY(0);}
+
+/* ── ABOUT ── */
+#about{padding:110px 60px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;max-width:1380px;margin:0 auto;}
+.ab-l{opacity:0;transform:translateX(-36px);transition:opacity .8s,transform .8s;}
+.ab-l.vis{opacity:1;transform:translateX(0);}
+.ab-t{font-family:var(--fb);font-size:clamp(26px,3.6vw,48px);font-weight:800;line-height:1.07;letter-spacing:-.03em;margin-bottom:20px;}
+.ab-t .acc{color:var(--blue);}
+.ab-p{font-size:15px;line-height:1.84;color:rgba(255,255,255,.6);margin-bottom:18px;}
+.ab-q{border-left:3px solid var(--lime);padding:16px 22px;background:rgba(132,245,42,.04);backdrop-filter:blur(8px);border-radius:0 10px 10px 0;font-size:15px;font-style:italic;color:rgba(255,255,255,.7);line-height:1.72;}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:2px;border-radius:18px;overflow:hidden;opacity:0;transform:translateX(36px);transition:opacity .8s,transform .8s .14s;}
+.stats.vis{opacity:1;transform:translateX(0);}
+.st{background:rgba(255,255,255,.03);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.06);padding:32px 26px;transition:background .3s,border-color .3s;}
+.st:hover{background:rgba(255,255,255,.05);border-color:rgba(0,149,245,.25);}
+.st:nth-child(1){border-radius:16px 0 0 0;}
+.st:nth-child(2){border-radius:0 16px 0 0;}
+.st:nth-child(3){border-radius:0 0 0 16px;}
+.st:nth-child(4){border-radius:0 0 16px 0;}
+.st-n{font-family:var(--fb);font-size:clamp(38px,5.5vw,62px);font-weight:800;line-height:1;color:var(--blue);letter-spacing:-.04em;margin-bottom:8px;}
+.st-n em{color:var(--lime);font-style:normal;}
+.st-l{font-size:13px;color:rgba(255,255,255,.42);letter-spacing:.03em;line-height:1.5;}
+@media(max-width:900px){#about{grid-template-columns:1fr;padding:80px 24px;gap:48px;}}
+
+/* ── PILLARS CAROUSEL ── */
+#pillars{padding:100px 60px;background:var(--dark2);position:relative;overflow:hidden;}
+.sec-hd{position:relative;z-index:2;text-align:center;margin-bottom:48px;}
+.pillar-carousel{position:relative;z-index:2;}
+.pc-viewport{overflow:hidden;border-radius:20px;}
+.pc-track{display:flex;transition:transform .6s cubic-bezier(.16,1,.3,1);}
+.pc-slide{flex:0 0 100%;padding:0 2px;}
+.pc-inner{background:rgba(255,255,255,.03);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:46px 44px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;transition:border-color .3s;}
+.pc-inner:hover{border-color:rgba(0,149,245,.22);}
+.pc-icon{width:60px;height:60px;border-radius:16px;background:rgba(0,149,245,.1);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--blue);margin-bottom:20px;transition:background .3s,transform .3s;}
+.pc-inner:hover .pc-icon{background:rgba(0,149,245,.2);transform:scale(1.08);}
+.pc-num{font-size:11px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.22);margin-bottom:10px;}
+.pc-t{font-family:var(--fb);font-size:clamp(22px,3vw,36px);font-weight:800;line-height:1.12;margin-bottom:14px;letter-spacing:-.03em;}
+.pc-t .hi{color:var(--blue);}
+.pc-tx{font-size:15px;line-height:1.8;color:rgba(255,255,255,.52);}
+.pc-vis{display:flex;align-items:center;justify-content:center;}
+.pc-vis-ring{width:180px;height:180px;border-radius:50%;border:1px solid rgba(0,149,245,.15);display:flex;align-items:center;justify-content:center;}
+.pc-vis-inner{width:120px;height:120px;border-radius:50%;border:1px solid rgba(0,149,245,.22);background:rgba(0,149,245,.06);display:flex;align-items:center;justify-content:center;font-size:42px;color:rgba(0,149,245,.4);}
+.pc-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:28px;}
+.pc-arrow{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;transition:all .3s;}
+.pc-arrow:hover{background:rgba(0,149,245,.15);border-color:rgba(0,149,245,.4);color:var(--white);}
+.pc-dots{display:flex;gap:8px;align-items:center;}
+.pc-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s;cursor:pointer;}
+.pc-dot.on{width:22px;border-radius:4px;background:var(--blue);}
+@media(max-width:900px){#pillars{padding:80px 24px;}.pc-inner{grid-template-columns:1fr;gap:28px;}.pc-vis{display:none;}}
+
+/* ── SPEAKERS ── */
+#speakers{padding:100px 60px;max-width:1380px;margin:0 auto;}
+.sp-topic{margin-top:12px;display:inline-flex;align-items:flex-start;gap:10px;background:rgba(0,149,245,.06);border:1px solid rgba(0,149,245,.18);border-radius:14px;padding:12px 18px;font-size:13px;color:rgba(255,255,255,.62);font-style:italic;max-width:600px;line-height:1.5;}
+.sp-topic strong{color:var(--blue2);font-style:normal;white-space:nowrap;}
+.spg{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:40px;}
+.spc{background:rgba(255,255,255,.03);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:22px;overflow:hidden;opacity:0;transform:translateY(28px);transition:opacity .6s,transform .6s,box-shadow .4s,border-color .3s;display:flex;flex-direction:row;}
+.spc.vis{opacity:1;transform:translateY(0);}
+.spc:nth-child(2){transition-delay:.1s;}
+.spc:nth-child(3){transition-delay:.15s;}
+.spc:nth-child(4){transition-delay:.2s;}
+.spc:hover{box-shadow:0 20px 50px rgba(0,0,0,.48);border-color:rgba(0,149,245,.22);}
+/* Speaker image container — user places the actual files */
+.sp-img-wrap{width:130px;flex-shrink:0;overflow:hidden;position:relative;background:linear-gradient(145deg,#0A1829,#101F38);}
+.sp-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform .5s;}
+.spc:hover .sp-img-wrap img{transform:scale(1.05);}
+.sp-badge{position:absolute;top:8px;left:8px;background:rgba(5,10,20,.8);backdrop-filter:blur(8px);border:1px solid rgba(0,149,245,.35);border-radius:100px;padding:4px 9px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue2);white-space:nowrap;}
+.sp-info{padding:20px;display:flex;flex-direction:column;justify-content:center;}
+.sp-n{font-family:var(--fb);font-size:16px;font-weight:800;margin-bottom:5px;letter-spacing:-.01em;}
+.sp-r{font-size:12px;color:rgba(255,255,255,.45);line-height:1.55;}
+.sp-li{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);opacity:.7;}
+@media(max-width:900px){#speakers{padding:80px 24px;}.spg{grid-template-columns:1fr;}}
+@media(max-width:500px){.spc{flex-direction:column;}.sp-img-wrap{width:100%;height:200px;}}
+
+/* ── TICKETS ── */
+#tickets{padding:100px 60px;background:var(--dark2);position:relative;overflow:hidden;}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:56px;align-items:start;}
+.tc{background:rgba(255,255,255,.03);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:30px 22px;position:relative;overflow:hidden;transition:transform .42s cubic-bezier(.16,1,.3,1),box-shadow .42s,border-color .3s;opacity:0;transform:translateY(36px);}
+.tc.vis{opacity:1;transform:translateY(0);}
+.tc:nth-child(2){transition-delay:.1s;}
+.tc:nth-child(3){transition-delay:.2s;}
+.tc:hover{transform:translateY(-8px)!important;box-shadow:0 26px 56px rgba(0,0,0,.52);}
+.tc.pop{background:linear-gradient(145deg,rgba(0,149,245,.09),rgba(0,100,200,.06));border-color:rgba(0,149,245,.45);transform:scale(1.03);}
+.tc.pop.vis{opacity:1;transform:scale(1.03) translateY(0);}
+.tc.pop:hover{transform:scale(1.03) translateY(-8px)!important;}
+.pop-b{position:absolute;top:14px;right:14px;background:var(--blue);color:var(--white);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 11px;border-radius:100px;}
+.t-tier{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.32);margin-bottom:10px;}
+.t-pr{font-family:var(--fb);font-size:clamp(32px,4.2vw,48px);font-weight:800;letter-spacing:-.04em;line-height:1;margin-bottom:4px;}
+.t-cur{font-size:11px;font-weight:500;color:rgba(255,255,255,.32);margin-bottom:20px;}
+.t-fl{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
+.t-fl li{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:rgba(255,255,255,.6);line-height:1.4;}
+.t-fl li i{font-size:10px;width:11px;flex-shrink:0;margin-top:3px;}
+.ck{color:var(--lime);}
+.cx{color:rgba(255,255,255,.16);}
+.t-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:13px 16px;border-radius:100px;font-family:var(--fb);font-weight:700;font-size:13px;cursor:pointer;transition:all .3s;border:none;}
+.t-def{background:rgba(255,255,255,.04);color:var(--white);border:1.5px solid rgba(255,255,255,.14);}
+.t-def:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.3);}
+.t-bl{background:var(--blue);color:var(--white);}
+.t-bl:hover{background:#1FAAFF;box-shadow:0 8px 24px rgba(0,149,245,.4);}
+.t-gr{background:rgba(132,245,42,.07);color:var(--lime);border:1.5px solid rgba(132,245,42,.28);}
+.t-gr:hover{background:rgba(132,245,42,.14);border-color:var(--lime);}
+@media(max-width:900px){#tickets{padding:80px 24px;}.tg{grid-template-columns:1fr;gap:14px;}.tc.pop{transform:scale(1);}.tc.pop.vis{transform:scale(1) translateY(0);}.tc.pop:hover{transform:scale(1) translateY(-8px)!important;}}
+
+/* ── REGISTRATION MODAL ── */
+.modal-overlay{position:fixed;inset:0;z-index:900;background:rgba(3,6,16,.93);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:linear-gradient(145deg,#0B1628,#0D1E36);border:1px solid rgba(255,255,255,.1);border-radius:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:34px 30px;transform:scale(.96) translateY(12px);transition:transform .3s cubic-bezier(.16,1,.3,1);position:relative;}
+.modal-box::-webkit-scrollbar{width:3px;}
+.modal-box::-webkit-scrollbar-thumb{background:var(--blue);border-radius:2px;}
+.modal-overlay.open .modal-box{transform:scale(1) translateY(0);}
+.modal-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;transition:all .3s;}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--white);}
+.step-bar{display:flex;align-items:center;gap:0;margin-bottom:28px;}
+.step-item{display:flex;align-items:center;gap:7px;flex:1;}
+.step-circle{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);flex-shrink:0;transition:all .3s;}
+.step-circle.done{background:var(--lime);border-color:var(--lime);color:var(--dark);}
+.step-circle.active{background:var(--blue);border-color:var(--blue);color:var(--white);}
+.step-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.28);transition:color .3s;}
+.step-label.active{color:var(--white);}
+.step-line{flex:1;height:1px;background:rgba(255,255,255,.08);margin:0 6px;}
+.step{display:none;}
+.step.active{display:block;}
+.modal-title{font-family:var(--fb);font-size:21px;font-weight:800;letter-spacing:-.02em;margin-bottom:5px;}
+.modal-sub{font-size:13px;color:rgba(255,255,255,.48);margin-bottom:22px;line-height:1.5;}
+.form-group{margin-bottom:16px;}
+.form-label{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.48);margin-bottom:7px;}
+.form-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:12px 14px;font-size:14px;color:var(--white);font-family:var(--fs);transition:border-color .3s,background .3s;outline:none;}
+.form-input:focus{border-color:rgba(0,149,245,.5);background:rgba(255,255,255,.06);}
+.form-input::placeholder{color:rgba(255,255,255,.22);}
+select.form-input{cursor:pointer;}
+select.form-input option{background:#0D1829;color:var(--white);}
+textarea.form-input{resize:none;height:80px;}
+.ticket-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.ticket-opt{position:relative;cursor:pointer;background:rgba(255,255,255,.03);border:1.5px solid rgba(255,255,255,.09);border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:14px;transition:all .3s;}
+.ticket-opt:hover{border-color:rgba(0,149,245,.35);background:rgba(0,149,245,.04);}
+.ticket-opt input{position:absolute;opacity:0;width:0;height:0;}
+.ticket-opt.sel{border-color:var(--blue);background:rgba(0,149,245,.07);}
+.opt-check{width:19px;height:19px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .3s;}
+.ticket-opt.sel .opt-check{background:var(--blue);border-color:var(--blue);}
+.opt-check i{font-size:9px;color:var(--white);opacity:0;transition:opacity .2s;}
+.ticket-opt.sel .opt-check i{opacity:1;}
+.opt-info{flex:1;}
+.opt-name{font-family:var(--fb);font-size:14px;font-weight:700;margin-bottom:2px;}
+.opt-desc{font-size:11px;color:rgba(255,255,255,.42);line-height:1.45;}
+.opt-price{font-family:var(--fb);font-size:17px;font-weight:800;color:var(--lime);white-space:nowrap;}
+.modal-btns{display:flex;gap:10px;margin-top:20px;}
+.btn-back{flex:1;background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);padding:13px;border-radius:100px;font-family:var(--fb);font-weight:600;font-size:13px;border:1.5px solid rgba(255,255,255,.1);cursor:pointer;transition:all .3s;}
+.btn-back:hover{background:rgba(255,255,255,.08);}
+.btn-next{flex:2;background:var(--blue);color:var(--white);padding:13px;border-radius:100px;font-family:var(--fb);font-weight:700;font-size:13px;border:none;cursor:pointer;transition:all .3s;}
+.btn-next:hover{background:#1FAAFF;box-shadow:0 8px 24px rgba(0,149,245,.4);}
+.btn-next:disabled{opacity:.38;cursor:not-allowed;}
+.pay-box{background:rgba(0,149,245,.06);border:1px solid rgba(0,149,245,.2);border-radius:14px;padding:20px;margin-bottom:16px;}
+.pay-title{font-family:var(--fb);font-size:14px;font-weight:700;margin-bottom:10px;}
+.pay-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;}
+.pay-row:last-child{border:none;padding-top:10px;}
+.pay-k{color:rgba(255,255,255,.45);}
+.pay-v{font-weight:600;}
+.pay-v.lime{color:var(--lime);}
+.momo-box{background:rgba(255,175,0,.05);border:1px solid rgba(255,175,0,.2);border-radius:13px;padding:16px;margin-bottom:14px;}
+.momo-lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,175,0,.8);margin-bottom:7px;}
+.momo-code{font-family:var(--fb);font-size:19px;font-weight:800;color:var(--white);letter-spacing:.05em;margin-bottom:5px;}
+.momo-note{font-size:12px;color:rgba(255,255,255,.42);line-height:1.55;}
+.btn-momo{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:100px;background:linear-gradient(135deg,#FFCC00,#FF9500);color:#1A0F00;font-family:var(--fb);font-weight:800;font-size:14px;border:none;cursor:pointer;margin-bottom:10px;transition:all .3s;text-decoration:none;}
+.btn-momo:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,180,0,.35);}
+.btn-confirm{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:100px;background:var(--lime);color:var(--dark);font-family:var(--fb);font-weight:700;font-size:14px;border:none;cursor:pointer;transition:all .3s;}
+.btn-confirm:hover{background:#91FF33;transform:translateY(-2px);}
+.btn-confirm:disabled{opacity:.38;cursor:not-allowed;}
+.modal-success{text-align:center;padding:16px 0;}
+.suc-icon{width:68px;height:68px;border-radius:50%;background:rgba(132,245,42,.1);border:2px solid rgba(132,245,42,.28);display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--lime);margin:0 auto 18px;}
+.suc-title{font-family:var(--fb);font-size:22px;font-weight:800;margin-bottom:10px;letter-spacing:-.02em;}
+.suc-sub{font-size:14px;color:rgba(255,255,255,.52);line-height:1.65;margin-bottom:22px;}
+
+/* ── CTA ── */
+#cta{padding:110px 60px;position:relative;overflow:hidden;text-align:center;}
+.cta-bg{position:absolute;inset:0;background:linear-gradient(135deg,#030812 0%,#061428 40%,#030E24 70%,#030812 100%);}
+.cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(0,149,245,.2) 0%,transparent 55%),radial-gradient(ellipse at 80% 50%,rgba(132,245,42,.12) 0%,transparent 50%);animation:glow-s 6s ease-in-out infinite alternate;}
+@keyframes glow-s{0%{opacity:.5;transform:scale(1);}100%{opacity:1;transform:scale(1.06);}}
+.cta-line{position:absolute;width:1px;top:0;bottom:0;background:rgba(0,149,245,.07);}
+.cta-content{position:relative;z-index:2;}
+.cta-kicker{font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--lime);margin-bottom:18px;}
+.cta-t{font-family:var(--fb);font-size:clamp(27px,5vw,66px);font-weight:900;line-height:1.04;letter-spacing:-.04em;max-width:840px;margin:0 auto 18px;}
+.cta-d{font-size:16px;color:rgba(255,255,255,.52);max-width:520px;margin:0 auto 44px;line-height:1.74;}
+.cta-bs{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
+@media(max-width:768px){#cta{padding:80px 24px;}}
+
+/* ── FOOTER ── */
+footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,255,.05);}
+.ft{max-width:1380px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:28px;}
+.ft-logo{height:44px;width:auto;object-fit:contain;opacity:.75;filter:brightness(1.1);}
+.ft-info{text-align:center;}
+.ft-date{font-family:var(--fb);font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.32);margin-bottom:4px;}
+.ft-ct{font-size:13px;color:rgba(255,255,255,.25);}
+.ft-soc{display:flex;align-items:center;gap:10px;}
+.ft-s{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(255,255,255,.4);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);transition:all .3s;}
+.ft-s:hover{background:var(--blue);color:var(--white);border-color:var(--blue);transform:translateY(-3px);}
+.ft-copy{width:100%;text-align:center;font-size:12px;color:rgba(255,255,255,.14);margin-top:32px;letter-spacing:.04em;}
+@media(max-width:768px){footer{padding:44px 24px;}.ft{flex-direction:column;align-items:center;text-align:center;}}
+
+/* ── WA FLOAT ── */
+.wa{position:fixed;bottom:28px;right:28px;z-index:600;width:52px;height:52px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:22px;box-shadow:0 4px 20px rgba(37,211,102,.4);animation:bob 3.2s ease-in-out infinite;transition:transform .3s;}
+.wa:hover{animation:none;transform:scale(1.1);}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-r"></div>
+<a href="https://chat.whatsapp.com/F6aXCT0hxrzAaWEv1CfAn1?mode=gi_t" target="_blank" class="wa"><i class="fab fa-whatsapp"></i></a>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <a href="#"><img src="logo.png" class="n-logo" alt="LinkedIn Locals Bamenda"></a>
+  <div class="n-pill">
+    <a href="#about">About</a>
+    <a href="#pillars">Why Attend</a>
+    <a href="#speakers">Speakers</a>
+    <a href="#tickets">Tickets</a>
+    <a href="tel:+237653719589">Contact</a>
+  </div>
+  <div class="n-right">
+    <button class="n-cta" onclick="openModal()"><i class="fas fa-ticket-alt"></i>Get Ticket</button>
+    <div class="ham" id="ham"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mob-menu" id="mm">
+  <a href="#about"    onclick="closeMob()">About</a>
+  <div class="mob-div"></div>
+  <a href="#pillars"  onclick="closeMob()">Why Attend</a>
+  <div class="mob-div"></div>
+  <a href="#speakers" onclick="closeMob()">Speakers</a>
+  <div class="mob-div"></div>
+  <a href="#tickets"  onclick="closeMob()">Tickets</a>
+  <div class="mob-div"></div>
+  <a href="tel:+237653719589" onclick="closeMob()">Contact</a>
+  <a href="javascript:void(0)" class="mob-cta-btn" onclick="closeMob();openModal()">
+    <i class="fas fa-ticket-alt"></i>&nbsp; Get Your Ticket
+  </a>
+</div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+  <div class="h-ghost">BEYOND THE PROFILE · CONNECT · GROW ·</div>
+  <div class="hgl hgl-v hgl-1"></div>
+  <div class="hgl hgl-v hgl-2"></div>
+
+  <div class="h-content">
+    <div class="h-badge"><div class="h-bdot"></div><span>Bamenda · 30th May 2026</span></div>
+    <p class="h-kicker">Introducing</p>
+    <h1 class="h-title"><span class="l1">LinkedIn</span><span class="l2">Locals</span></h1>
+    <div class="h-theme">"Beyond The Profile"</div>
+    <div class="h-meta">
+      <div class="h-mi"><i class="fas fa-calendar-alt"></i><span>30th May 2026</span></div>
+      <div class="h-mi"><i class="fas fa-clock"></i><span>10:00 AM Prompt</span></div>
+      <div class="h-mi"><i class="fas fa-map-marker-alt"></i><span>Alliance Francais, Bamenda</span></div>
+      <div class="h-mi"><i class="fas fa-users"></i><span>Students · Professionals · Entrepreneurs</span></div>
+    </div>
+    <div class="h-ctas">
+      <button class="btn-p" onclick="openModal()"><i class="fas fa-ticket-alt"></i>Get Your Ticket</button>
+      <a href="https://chat.whatsapp.com/F6aXCT0hxrzAaWEv1CfAn1?mode=gi_t" target="_blank" class="btn-s"><i class="fab fa-whatsapp"></i>Join WhatsApp Group</a>
+    </div>
+  </div>
+
+  <!-- Animated stacked cards (right column) -->
+  <div class="h-cards">
+    <div class="h-card-deck" id="cardDeck">
+      <div class="hc" data-pos="0">
+        <div class="hc-icon" style="background:rgba(132,245,42,.1);color:var(--lime)"><i class="fas fa-calendar-check"></i></div>
+        <div class="hc-label" style="color:rgba(132,245,42,.7)">Event Details</div>
+        <div class="hc-title">30 May 2026 · <span style="color:var(--blue)">10AM</span></div>
+        <div class="hc-body">Alliance Francais, Bamenda<br>Bamenda's first-ever LinkedIn Locals experience</div>
+        <div class="hc-tags"><span class="hc-tag">Students</span><span class="hc-tag">Entrepreneurs</span><span class="hc-tag">Professionals</span></div>
+      </div>
+      <div class="hc" data-pos="1">
+        <div class="hc-icon" style="background:rgba(0,149,245,.1);color:var(--blue)"><i class="fas fa-comments"></i></div>
+        <div class="hc-label" style="color:rgba(0,149,245,.7)">Panel Discussion</div>
+        <div class="hc-title" style="font-size:17px;line-height:1.3">"Is networking enough? What really creates opportunities today?"</div>
+        <div class="hc-body" style="margin-top:10px">An honest, high-energy conversation with leaders who have actually built something in Cameroon.</div>
+      </div>
+      <div class="hc" data-pos="2">
+        <div class="hc-icon" style="background:rgba(132,245,42,.1);color:var(--lime)"><i class="fas fa-microphone-alt"></i></div>
+        <div class="hc-label" style="color:rgba(132,245,42,.7)">Confirmed Speakers</div>
+        <div class="hc-title">4 Industry <span style="color:var(--blue)">Leaders</span></div>
+        <div class="hc-body">Randy King · Balemba Cecilia · Rodrick Kongnyuy · Gudwin Nugang</div>
+        <div class="hc-tags" style="margin-top:12px"><span class="hc-tag" style="color:rgba(132,245,42,.6);border-color:rgba(132,245,42,.18)">Speaker Panelists</span></div>
+      </div>
+      <div class="hc" data-pos="3">
+        <div class="hc-icon" style="background:rgba(0,149,245,.1);color:var(--blue)"><i class="fas fa-ticket-alt"></i></div>
+        <div class="hc-label" style="color:rgba(0,149,245,.7)">Secure Your Seat</div>
+        <div class="hc-title">Tickets <span style="color:var(--lime)">Available</span></div>
+        <div class="hc-prices">
+          <div class="hc-prow"><span class="hc-price" style="font-size:22px">1,500</span><span class="hc-tier">XAF · Regular</span></div>
+          <div class="hc-prow"><span class="hc-price" style="font-size:18px">3,000</span><span class="hc-tier">XAF · VIP</span></div>
+          <div class="hc-prow"><span class="hc-price" style="font-size:15px">5,000</span><span class="hc-tier">XAF · VVIP</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="hc-dots" id="hcDots"></div>
+  </div>
+
+  <div class="scroll-hint"><div class="s-mouse"><div class="s-dot"></div></div><span>Scroll to explore</span></div>
+</section>
+
+<!-- ── MARQUEE ── -->
+<div class="mq"><div class="mq-t" id="mq"></div></div>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="ab-l" id="abl">
+    <div class="s-lbl">About the Event</div>
+    <h2 class="ab-t">Where Young Professionals Meet <span class="acc">Real Opportunities</span></h2>
+    <p class="ab-p">LinkedIn Locals Bamenda is Bamenda's first-ever LinkedIn Local experience — a bold, in-person gathering designed to move young professionals, entrepreneurs, and students beyond their digital profiles into meaningful, real-world connection.</p>
+    <p class="ab-p">"Opportunities are not always announced. Sometimes they show up in conversations. In rooms like this."</p>
+    <blockquote class="ab-q">This event is designed to change that. You'll meet industry leaders, changemakers, and peers who can open doors you didn't even know existed — and discover how to turn LinkedIn from a digital CV into a launchpad for growth.</blockquote>
+  </div>
+  <div class="stats" id="stats">
+    <div class="st"><div class="st-n" data-t="4">0<em>+</em></div><div class="st-l">Confirmed<br>Speakers</div></div>
+    <div class="st"><div class="st-n" data-t="3">0<em> Tiers</em></div><div class="st-l">Ticket Options<br>Available</div></div>
+    <div class="st"><div class="st-n" data-t="1">0</div><div class="st-l">City.<br>One Movement.</div></div>
+    <div class="st"><div class="st-n" data-t="100">0<em>+</em></div><div class="st-l">Connections<br>to Be Made</div></div>
+  </div>
+</section>
+
+<!-- ── PILLARS CAROUSEL ── -->
+<section id="pillars">
+  <div class="s-bg" style="top:50%;right:-40px;transform:translateY(-50%);">CONNECT</div>
+  <div class="sec-hd rv">
+    <div class="s-lbl" style="justify-content:center;">Why Attend</div>
+    <h2 class="sec-t">Three Reasons to Be in the Room</h2>
+  </div>
+  <div class="pillar-carousel rv">
+    <div class="pc-viewport">
+      <div class="pc-track" id="pcTrack">
+        <div class="pc-slide"><div class="pc-inner">
+          <div>
+            <div class="pc-icon"><i class="fas fa-compass"></i></div>
+            <div class="pc-num">01 / 03</div>
+            <h3 class="pc-t">Discover <span class="hi">New Opportunities</span></h3>
+            <p class="pc-tx">Opportunities are not always announced. They show up in conversations — in rooms filled with the right people. This is that room. Come ready to discover what becomes possible when you move beyond the profile.</p>
+          </div>
+          <div class="pc-vis"><div class="pc-vis-ring"><div class="pc-vis-inner"><i class="fas fa-lightbulb"></i></div></div></div>
+        </div></div>
+        <div class="pc-slide"><div class="pc-inner">
+          <div>
+            <div class="pc-icon"><i class="fas fa-handshake"></i></div>
+            <div class="pc-num">02 / 03</div>
+            <h3 class="pc-t">Build Meaningful <span class="hi">Connections</span></h3>
+            <p class="pc-tx">Not every connection changes your life. But the right one can. This is where those right ones happen — face to face, not profile to profile. Every person in that room is a potential partner, mentor, or collaborator.</p>
+          </div>
+          <div class="pc-vis"><div class="pc-vis-ring"><div class="pc-vis-inner"><i class="fas fa-network-wired"></i></div></div></div>
+        </div></div>
+        <div class="pc-slide"><div class="pc-inner">
+          <div>
+            <div class="pc-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div class="pc-num">03 / 03</div>
+            <h3 class="pc-t">Learn From <span class="hi">The Right People</span></h3>
+            <p class="pc-tx">Sitting in a room with people who have actually built something, failed, and learned — that changes how you think and move. Information is everywhere. Wisdom from lived experience is rare. Come get some.</p>
+          </div>
+          <div class="pc-vis"><div class="pc-vis-ring"><div class="pc-vis-inner"><i class="fas fa-brain"></i></div></div></div>
+        </div></div>
+      </div>
+    </div>
+    <div class="pc-nav">
+      <div class="pc-arrow" id="pcPrev"><i class="fas fa-chevron-left"></i></div>
+      <div class="pc-dots" id="pcDots"></div>
+      <div class="pc-arrow" id="pcNext"><i class="fas fa-chevron-right"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SPEAKERS ── -->
+<!--
+  IMAGE FILES: Place these in the SAME folder as index.html:
+  Randy_King.jpg | Balemba_Cecilia.jpg | Rodrick_Kongnyuy.jpg | Gudwin_Nugang.jpg
+  They will display as cover-fit portraits automatically.
+-->
+<section id="speakers">
+  <div class="s-lbl">Speakers &amp; Panelists</div>
+  <h2 class="sec-t rv" style="max-width:560px;margin-bottom:14px;">Meet the People<br>Behind the Insight</h2>
+  <div class="sp-topic rv">
+    <strong>Panel Topic:</strong>&nbsp;"Is networking enough? What really creates opportunities today?"
+  </div>
+  <div class="spg">
+    <div class="spc">
+      <div class="sp-img-wrap"><img src="/images/Randy King.jpg" alt="Kimbi Randy King"><div class="sp-badge">Speaker · Panelist</div></div>
+      <div class="sp-info"><div class="sp-n">Kimbi Randy King</div><div class="sp-r">Speaker · Trainer · Coach</div><div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div></div>
+    </div>
+    <div class="spc">
+      <div class="sp-img-wrap"><img src="/images/Balemba Cecilia.jpg" alt="Balemba Cecilia Kalang"><div class="sp-badge">Speaker · Panelist</div></div>
+      <div class="sp-info"><div class="sp-n">Balemba Cecilia Kalang</div><div class="sp-r">Graphic Design Tutor · Founder S.A<br>Branding &amp; AI Expert</div><div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div></div>
+    </div>
+    <div class="spc">
+      <div class="sp-img-wrap"><img src="/images/Rodrick Kongnyuy.jpg" alt="Rodrick Kongnyuy"><div class="sp-badge">Speaker · Panelist</div></div>
+      <div class="sp-info"><div class="sp-n">Rodrick Kongnyuy</div><div class="sp-r">Founder &amp; CEO, RicHDaD Estate Services<br>UN Junior Senator &amp; Mentor</div><div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div></div>
+    </div>
+    <div class="spc">
+      <div class="sp-img-wrap"><img src="/images/Gudwin Nugang.jpg" alt="Gudwin Nugang Forbang"><div class="sp-badge">Speaker · Panelist</div></div>
+      <div class="sp-info"><div class="sp-n">Mr Gudwin Nugang Forbang</div><div class="sp-r">Speaker · Panelist<br>LinkedIn Locals Bamenda 2026</div><div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TICKETS ── -->
+<section id="tickets">
+  <div class="s-bg" style="top:50%;left:-30px;transform:translateY(-50%);">TICKETS</div>
+  <div class="sec-hd rv" style="position:relative;z-index:2;">
+    <div class="s-lbl" style="justify-content:center;">Secure Your Seat</div>
+    <h2 class="sec-t">Choose Your Experience</h2>
+    <p style="color:rgba(255,255,255,.4);font-size:15px;margin-top:12px;">Alliance Francais, Bamenda · 30th May 2026 · Limited Seats</p>
+  </div>
+  <div class="tg">
+    <div class="tc">
+      <div class="t-tier">Regular Pass</div>
+      <div class="t-pr">1,500</div>
+      <div class="t-cur">XAF · FCFA · For access and basic experience</div>
+      <ul class="t-fl">
+        <li><i class="fas fa-check ck"></i>Entry to the event</li>
+        <li><i class="fas fa-check ck"></i>Access to all speaker sessions</li>
+        <li><i class="fas fa-check ck"></i>Access to panel discussion</li>
+        <li><i class="fas fa-check ck"></i>General networking access</li>
+        <li><i class="fas fa-check ck"></i>Perfect for attendees who want to learn &amp; connect</li>
+        <li><i class="fas fa-times cx"></i>Priority seating</li>
+        <li><i class="fas fa-times cx"></i>Speaker meet &amp; greet</li>
+      </ul>
+      <button class="t-btn t-def" onclick="openModal(1500,'Regular Pass')"><i class="fas fa-ticket-alt"></i>Get Regular Ticket</button>
+    </div>
+    <div class="tc pop">
+      <div class="pop-b">Most Popular</div>
+      <div class="t-tier">VIP Pass</div>
+      <div class="t-pr">3,000</div>
+      <div class="t-cur">XAF · FCFA · For a more intentional experience</div>
+      <ul class="t-fl">
+        <li><i class="fas fa-check ck"></i>Everything in Regular</li>
+        <li><i class="fas fa-check ck"></i>Priority seating (closer to speakers)</li>
+        <li><i class="fas fa-check ck"></i>Access to structured networking experience</li>
+        <li><i class="fas fa-check ck"></i>Opportunity for brief speaker interaction</li>
+        <li><i class="fas fa-check ck"></i>More visibility &amp; better positioning</li>
+        <li><i class="fas fa-times cx"></i>Exclusive meet &amp; greet access</li>
+      </ul>
+      <button class="t-btn t-bl" onclick="openModal(3000,'VIP Pass')"><i class="fas fa-ticket-alt"></i>Get VIP Ticket</button>
+    </div>
+    <div class="tc">
+      <div class="t-tier">VVIP Pass</div>
+      <div class="t-pr">5,000</div>
+      <div class="t-cur">XAF · FCFA · For maximum value &amp; access</div>
+      <ul class="t-fl">
+        <li><i class="fas fa-check ck"></i>Everything in VIP</li>
+        <li><i class="fas fa-check ck"></i>Front row seating</li>
+        <li><i class="fas fa-check ck"></i>Exclusive speaker access (meet &amp; greet)</li>
+        <li><i class="fas fa-check ck"></i>Premium networking experience</li>
+        <li><i class="fas fa-check ck"></i>Recognition at the event (optional)</li>
+        <li><i class="fas fa-check ck"></i>Maximum proximity &amp; access</li>
+      </ul>
+      <button class="t-btn t-gr" onclick="openModal(5000,'VVIP Pass')"><i class="fas fa-star"></i>Get VVIP Ticket</button>
+    </div>
+  </div>
+  <p class="rv" style="text-align:center;margin-top:26px;color:rgba(255,255,255,.22);font-size:13px;position:relative;z-index:2;">
+    Enquiries: <strong style="color:rgba(255,255,255,.4)">+237 653 719 589</strong> &nbsp;·&nbsp; <strong style="color:rgba(255,255,255,.4)">linkedinlocals@gmail.com</strong>
+  </p>
+</section>
+
+<!-- ── CTA ── -->
+<section id="cta">
+  <div class="cta-bg"></div><div class="cta-glow"></div>
+  <div class="cta-line" style="left:18%"></div>
+  <div class="cta-line" style="left:82%"></div>
+  <div class="cta-content rv">
+    <p class="cta-kicker">Don't miss out · 30th May 2026 · Alliance Francais</p>
+    <h2 class="cta-t">Be Part of the First-Ever LinkedIn Local in Bamenda</h2>
+    <p class="cta-d">Join young professionals, students, and entrepreneurs for a day that will change how you connect, grow, and show up professionally.</p>
+    <div class="cta-bs">
+      <button class="btn-p" onclick="openModal()" style="font-size:16px;padding:17px 42px"><i class="fas fa-ticket-alt"></i>Secure Your Spot</button>
+      <a href="https://chat.whatsapp.com/F6aXCT0hxrzAaWEv1CfAn1?mode=gi_t" target="_blank" class="btn-s" style="font-size:16px;padding:16px 42px"><i class="fab fa-whatsapp"></i>Join WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="ft">
+    <img src="/images/logo.png" class="ft-logo" alt="LinkedIn Locals">
+    <div class="ft-info">
+      <div class="ft-date">30th May 2026 · 10:00 AM · Alliance Francais, Bamenda</div>
+      <div class="ft-ct">+237 653 719 589 &nbsp;·&nbsp; linkedinlocals@gmail.com &nbsp;·&nbsp; Beyond The Profile</div>
+    </div>
+    <div class="ft-soc">
+      <a href="#" class="ft-s"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#" class="ft-s"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="ft-s"><i class="fab fa-instagram"></i></a>
+    </div>
+  </div>
+  <p class="ft-copy">© 2026 LinkedIn Locals Bamenda · All Rights Reserved</p>
+</footer>
+
+<!-- ══════════════════ REGISTRATION MODAL ══════════════════ -->
+<div class="modal-overlay" id="regModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+
+    <!-- Stepper -->
+    <div class="step-bar">
+      <div class="step-item"><div class="step-circle active" id="sc1">1</div><div class="step-label active" id="sl1">Your Info</div></div>
+      <div class="step-line"></div>
+      <div class="step-item"><div class="step-circle" id="sc2">2</div><div class="step-label" id="sl2">Ticket</div></div>
+      <div class="step-line"></div>
+      <div class="step-item"><div class="step-circle" id="sc3">3</div><div class="step-label" id="sl3">Payment</div></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="step active" id="step1">
+      <div class="modal-title">Tell us about yourself</div>
+      <div class="modal-sub">Your details help us prepare the right experience and send you event updates.</div>
+      <div class="form-group">
+        <label class="form-label" for="f-name">Full Name *</label>
+        <input class="form-input" id="f-name" type="text" placeholder="Your full name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-email">Email Address *</label>
+        <input class="form-input" id="f-email" type="email" placeholder="you@example.com" required>
+        <div style="font-size:11px;color:rgba(255,255,255,.28);margin-top:5px;padding-left:2px"><i class="fas fa-lock" style="margin-right:4px"></i>A confirmation email will be sent here</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-phone">Phone Number *</label>
+        <input class="form-input" id="f-phone" type="tel" placeholder="+237 6XX XXX XXX" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-job">What do you do? *</label>
+        <input class="form-input" id="f-job" type="text" placeholder="Student / Entrepreneur / Developer / etc.">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-hear">How did you hear about us?</label>
+        <select class="form-input" id="f-hear">
+          <option value="">Select an option</option>
+          <option>LinkedIn</option><option>WhatsApp</option><option>Facebook</option>
+          <option>Instagram</option><option>Friend or Colleague</option><option>Other</option>
+        </select>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-next" id="step1Btn" onclick="goStep(2)">Continue <i class="fas fa-arrow-right" style="margin-left:4px"></i></button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step" id="step2">
+      <div class="modal-title">Choose your ticket</div>
+      <div class="modal-sub">Select the experience that suits you best. Limited seats available.</div>
+      <div class="ticket-opts">
+        <label class="ticket-opt" id="opt1500" onclick="selTicket(1500,'Regular Pass',this)">
+          <input type="radio" name="tk" value="1500">
+          <div class="opt-check"><i class="fas fa-check"></i></div>
+          <div class="opt-info"><div class="opt-name">Regular Pass</div><div class="opt-desc">Entry · All sessions · Panel discussion · General networking</div></div>
+          <div class="opt-price">1,500 XAF</div>
+        </label>
+        <label class="ticket-opt" id="opt3000" onclick="selTicket(3000,'VIP Pass',this)">
+          <input type="radio" name="tk" value="3000">
+          <div class="opt-check"><i class="fas fa-check"></i></div>
+          <div class="opt-info"><div class="opt-name">VIP Pass <span style="background:var(--blue);color:#fff;font-size:9px;padding:2px 7px;border-radius:100px;margin-left:5px;vertical-align:middle">Popular</span></div><div class="opt-desc">Everything in Regular + Priority seating · Structured networking · Speaker interaction</div></div>
+          <div class="opt-price">3,000 XAF</div>
+        </label>
+        <label class="ticket-opt" id="opt5000" onclick="selTicket(5000,'VVIP Pass',this)">
+          <input type="radio" name="tk" value="5000">
+          <div class="opt-check"><i class="fas fa-check"></i></div>
+          <div class="opt-info"><div class="opt-name">VVIP Pass</div><div class="opt-desc">Everything in VIP + Front row · Exclusive speaker access · Premium networking</div></div>
+          <div class="opt-price">5,000 XAF</div>
+        </label>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="f-exp">Your expectations (optional)</label>
+        <textarea class="form-input" id="f-exp" placeholder="What do you hope to gain from LinkedIn Locals Bamenda?"></textarea>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-back" onclick="goStep(1)"><i class="fas fa-arrow-left" style="margin-right:4px"></i> Back</button>
+        <button class="btn-next" id="step2Btn" onclick="goStep(3)" disabled>Continue <i class="fas fa-arrow-right" style="margin-left:4px"></i></button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step" id="step3">
+      <div class="modal-title">Pay &amp; Confirm</div>
+      <div class="modal-sub">Review your details, pay via MTN MoMo, then confirm below.</div>
+      <div class="pay-box">
+        <div class="pay-title"><i class="fas fa-receipt" style="color:var(--blue);margin-right:7px"></i>Registration Summary</div>
+        <div class="pay-row"><span class="pay-k">Name</span><span class="pay-v" id="sum-name">—</span></div>
+        <div class="pay-row"><span class="pay-k">Email</span><span class="pay-v" id="sum-email" style="font-size:12px">—</span></div>
+        <div class="pay-row"><span class="pay-k">Ticket</span><span class="pay-v" id="sum-ticket">—</span></div>
+        <div class="pay-row"><span class="pay-k">Amount to Pay</span><span class="pay-v lime" id="sum-price">—</span></div>
+      </div>
+      <div class="momo-box">
+        <div class="momo-lbl"><i class="fas fa-mobile-alt" style="margin-right:5px"></i>MTN Mobile Money Payment</div>
+        <div class="momo-code" id="momoCode">*126*1*1500*653719589#</div>
+        <div class="momo-note">Dial the code above on your phone — OR tap "Pay Now" to auto-dial. Enter your MoMo PIN when prompted. After payment, click Confirm below.</div>
+      </div>
+      <a class="btn-momo" id="momoLink" href="tel:*126*1*1500*653719589%23"><i class="fas fa-phone-alt"></i>Pay Now via MTN MoMo</a>
+      <button class="btn-confirm" id="confirmBtn" onclick="submitReg()"><i class="fas fa-check-circle"></i> I've Paid — Confirm Registration</button>
+      <div class="modal-btns" style="margin-top:10px">
+        <button class="btn-back" onclick="goStep(2)"><i class="fas fa-arrow-left" style="margin-right:4px"></i> Back</button>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="step" id="stepDone">
+      <div class="modal-success">
+        <div class="suc-icon"><i class="fas fa-check"></i></div>
+        <div class="suc-title">You're In! 🎉</div>
+        <div class="suc-sub" id="sucText">Your registration has been confirmed. Check your email for a confirmation and updates from LinkedIn Locals Bamenda.</div>
+        <a href="https://chat.whatsapp.com/F6aXCT0hxrzAaWEv1CfAn1?mode=gi_t" target="_blank" class="btn-p" style="margin:0 auto;display:inline-flex"><i class="fab fa-whatsapp"></i>Join WhatsApp Group</a>
+        <div style="margin-top:14px"><button onclick="closeModal()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:13px;cursor:pointer;font-family:var(--fs);">Close this window</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ CONFIG — Replace these values ══════════════
+   FORMSPREE_ID  : formspree.io → sign up → create form → get ID (e.g. 'xpwzgkab')
+   EJS_PUBLIC_KEY: emailjs.com  → Account → Public Key
+   EJS_SERVICE_ID: emailjs.com  → Email Services → Service ID
+   EJS_TMPL_ID   : emailjs.com  → Email Templates → Template ID
+   Template variables to use: {{to_name}}, {{to_email}}, {{ticket_tier}},
+   {{ticket_price}}, {{event_date}}, {{event_venue}}, {{momo_number}}
+════════════════════════════════════════════════ */
+const CFG = {
+  formspree  : 'YOUR_FORMSPREE_ID',
+  ejsKey     : 'YOUR_EMAILJS_PUBLIC_KEY',
+  ejsService : 'YOUR_EMAILJS_SERVICE_ID',
+  ejsTemplate: 'YOUR_EMAILJS_TEMPLATE_ID',
+  momo       : '653719589',
+  email      : 'linkedinlocals@gmail.com'
+};
+try { emailjs.init(CFG.ejsKey); } catch(e){}
+
+/* Form state */
+const F = { name:'',email:'',phone:'',job:'',hear:'',ticket:'',tName:'',price:0,expect:'' };
+
+/* ── CURSOR ── */
+const $c=document.getElementById('cur'),$r=document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;$c.style.left=mx+'px';$c.style.top=my+'px';$r.style.left=rx+'px';$r.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.pc-inner,.tc,.spc,.ticket-opt').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{$c.classList.add('x');$r.classList.add('x');});
+  el.addEventListener('mouseleave',()=>{$c.classList.remove('x');$r.classList.remove('x');});
+});
+
+/* ── NAV ── */
+const navEl=document.getElementById('nav');
+window.addEventListener('scroll',()=>navEl.classList.toggle('sc',scrollY>60),{passive:true});
+
+/* ── HAMBURGER ── */
+const ham=document.getElementById('ham'),mm=document.getElementById('mm');
+function openMob(){ham.classList.add('o');mm.classList.add('o');document.body.style.overflow='hidden';}
+function closeMob(){ham.classList.remove('o');mm.classList.remove('o');document.body.style.overflow='';}
+ham.onclick=()=>mm.classList.contains('o')?closeMob():openMob();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMob();closeModal();}});
+
+/* ── MARQUEE ── */
+const mqEl=document.getElementById('mq');
+['Students','Entrepreneurs','Young Professionals','Industry Leaders','Changemakers','Bamenda','Beyond The Profile','30th May 2026','Alliance Francais','Networking','Career Growth','LinkedIn Locals'].forEach(t=>{
+  const s=document.createElement('span');s.className='mq-i';s.innerHTML='<span class="mq-d"></span>'+t;mqEl.appendChild(s);
+});
+mqEl.innerHTML+=mqEl.innerHTML;
+
+/* ── REVEALS ── */
+const rObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.1});
+document.querySelectorAll('.rv,.tc,.spc,.ab-l,.stats').forEach(el=>rObs.observe(el));
+
+/* ── COUNT UP ── */
+const cObs=new IntersectionObserver(es=>{es.forEach(e=>{
+  if(!e.isIntersecting)return;
+  e.target.querySelectorAll('[data-t]').forEach(el=>{
+    const t=parseInt(el.getAttribute('data-t'));
+    const em=el.querySelector('em');let n=0,step=Math.max(1,Math.ceil(t/50));
+    const iv=setInterval(()=>{n=Math.min(n+step,t);const tx=el.childNodes[0];if(tx&&tx.nodeType===3)tx.textContent=n;if(n>=t)clearInterval(iv);},30);
+  });
+  cObs.unobserve(e.target);
+});},{threshold:.3});
+const sEl=document.getElementById('stats');if(sEl)cObs.observe(sEl);
+
+/* ── PILLARS CAROUSEL ── */
+let pi=0;
+const pt=document.getElementById('pcTrack'),pd=document.getElementById('pcDots');
+const ps=pt.querySelectorAll('.pc-slide');
+ps.forEach((_,i)=>{const d=document.createElement('div');d.className='pc-dot'+(i===0?' on':'');d.onclick=()=>pcGo(i);pd.appendChild(d);});
+function pcGo(i){pi=i;pt.style.transform=`translateX(-${i*100}%)`;document.querySelectorAll('.pc-dot').forEach((d,j)=>d.classList.toggle('on',j===i));}
+document.getElementById('pcPrev').onclick=()=>pcGo((pi-1+ps.length)%ps.length);
+document.getElementById('pcNext').onclick=()=>pcGo((pi+1)%ps.length);
+let pct=setInterval(()=>pcGo((pi+1)%ps.length),4200);
+pt.parentElement.addEventListener('mouseenter',()=>clearInterval(pct));
+pt.parentElement.addEventListener('mouseleave',()=>{pct=setInterval(()=>pcGo((pi+1)%ps.length),4200);});
+let ptx=0;pt.addEventListener('touchstart',e=>{ptx=e.touches[0].clientX;},{passive:true});
+pt.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-ptx;if(Math.abs(dx)>40)pcGo(dx<0?(pi+1)%ps.length:(pi-1+ps.length)%ps.length);});
+
+/* ── HERO STACKED CARDS ── */
+const cards=[...document.querySelectorAll('.hc')];
+const dd=document.getElementById('hcDots');
+cards.forEach((_,i)=>{const d=document.createElement('div');d.className='hc-dot'+(i===0?' on':'');d.onclick=()=>hcGo(i);dd.appendChild(d);});
+let ha=0;
+function hcGo(to){cards.forEach((c,i)=>c.setAttribute('data-pos',((i-to)%cards.length+cards.length)%cards.length));ha=to;document.querySelectorAll('.hc-dot').forEach((d,i)=>d.classList.toggle('on',i===to));}
+let hct=setInterval(()=>hcGo((ha+1)%cards.length),4000);
+document.getElementById('cardDeck').onclick=()=>{clearInterval(hct);hcGo((ha+1)%cards.length);hct=setInterval(()=>hcGo((ha+1)%cards.length),4000);};
+
+/* ── MODAL ── */
+function openModal(price=3000,name='VIP Pass'){
+  F.price=price;F.tName=name;F.ticket=String(price);
+  document.querySelectorAll('.ticket-opt').forEach(o=>o.classList.remove('sel'));
+  const map={1500:'opt1500',3000:'opt3000',5000:'opt5000'};
+  if(map[price]){document.getElementById(map[price]).classList.add('sel');document.getElementById('step2Btn').disabled=false;}
+  document.getElementById('regModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  goStep(1);
+}
+function closeModal(){document.getElementById('regModal').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('regModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function goStep(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById(n==='Done'?'stepDone':'step'+n).classList.add('active');
+  if(typeof n==='number')[1,2,3].forEach(i=>{
+    const c=document.getElementById('sc'+i),l=document.getElementById('sl'+i);
+    if(i<n){c.className='step-circle done';c.innerHTML='<i class="fas fa-check" style="font-size:10px"></i>';}
+    else if(i===n){c.className='step-circle active';c.textContent=i;}
+    else{c.className='step-circle';c.textContent=i;}
+    l.classList.toggle('active',i===n);
+  });
+  if(n===3)buildSummary();
+}
+
+function selTicket(p,n,el){
+  F.price=p;F.tName=n;F.ticket=String(p);
+  document.querySelectorAll('.ticket-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('step2Btn').disabled=false;
+}
+
+function buildSummary(){
+  F.name =document.getElementById('f-name').value.trim();
+  F.email=document.getElementById('f-email').value.trim();
+  F.phone=document.getElementById('f-phone').value.trim();
+  F.job  =document.getElementById('f-job').value.trim();
+  F.hear =document.getElementById('f-hear').value;
+  F.expect=document.getElementById('f-exp').value.trim();
+  document.getElementById('sum-name').textContent=F.name||'—';
+  document.getElementById('sum-email').textContent=F.email||'—';
+  document.getElementById('sum-ticket').textContent=F.tName;
+  document.getElementById('sum-price').textContent=F.price.toLocaleString()+' XAF';
+  const code=`*126*1*${F.price}*${CFG.momo}#`;
+  document.getElementById('momoCode').textContent=code;
+  document.getElementById('momoLink').href=`tel:*126*1*${F.price}*${CFG.momo}%23`;
+}
+
+async function submitReg(){
+  const btn=document.getElementById('confirmBtn');
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin" style="margin-right:8px"></i>Submitting…';
+  const data={
+    name:F.name,email:F.email,phone:F.phone,occupation:F.job,
+    how_heard:F.hear||'Not specified',
+    ticket_tier:F.tName,ticket_price:F.price+' XAF',
+    expectations:F.expect||'Not provided',
+    event:'LinkedIn Locals Bamenda – 30th May 2026, Alliance Francais',
+    _subject:`New Registration: ${F.name} – ${F.tName}`,
+    _replyto:F.email
+  };
+  /* 1. Formspree → org email */
+  if(CFG.formspree!=='YOUR_FORMSPREE_ID'){
+    try{await fetch(`https://formspree.io/f/${CFG.formspree}`,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});}
+    catch(e){console.warn('Formspree:',e);}
+  }
+  /* 2. EmailJS → confirmation to registrant
+     Tip to avoid spam: in EmailJS, use "Reply To" = {{to_email}} and
+     set From Name = "LinkedIn Locals Bamenda" for a professional sender */
+  if(CFG.ejsService!=='YOUR_EMAILJS_SERVICE_ID'){
+    try{await emailjs.send(CFG.ejsService,CFG.ejsTemplate,{
+      to_name:F.name,to_email:F.email,
+      ticket_tier:F.tName,ticket_price:F.price.toLocaleString()+' XAF',
+      event_date:'30th May 2026, 10:00 AM',
+      event_venue:'Alliance Francais, Bamenda',
+      momo_number:CFG.momo,
+      whatsapp:'https://chat.whatsapp.com/F6aXCT0hxrzAaWEv1CfAn1?mode=gi_t'
+    });}
+    catch(e){console.warn('EmailJS:',e);}
+  }
+  /* Show success */
+  goStep('Done');
+  document.getElementById('sucText').innerHTML=
+    `Thank you, <strong style="color:var(--white)">${F.name}</strong>! Your <strong style="color:var(--lime)">${F.tName}</strong> registration for LinkedIn Locals Bamenda has been received.<br><br>
+     A confirmation has been sent to <strong style="color:var(--white)">${F.email}</strong>. Join our WhatsApp group to stay fully updated on event details and updates.`;
+}
+
+/* ── SMOOTH SCROLL ── */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}});
+});
+</script>
+</body>
+</html>
