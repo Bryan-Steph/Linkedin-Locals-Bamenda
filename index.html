@@ -185,27 +185,81 @@ nav.sc .n-pill{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1
 #pillars{padding:100px 60px;background:var(--dark2);position:relative;overflow:hidden;}
 .sec-hd{position:relative;z-index:2;text-align:center;margin-bottom:48px;}
 .pillar-carousel{position:relative;z-index:2;}
+/* Two-col layout wrapper */
+.pc-layout{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;}
+.pc-left-col{}
 .pc-viewport{overflow:hidden;border-radius:20px;}
 .pc-track{display:flex;transition:transform .6s cubic-bezier(.16,1,.3,1);}
-.pc-slide{flex:0 0 100%;padding:0 2px;}
-.pc-inner{background:rgba(255,255,255,.03);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:46px 44px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;transition:border-color .3s;}
+.pc-slide{flex:0 0 100%;}
+.pc-inner{background:rgba(255,255,255,.03);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.07);border-radius:20px;padding:40px 36px;transition:border-color .3s;}
 .pc-inner:hover{border-color:rgba(0,149,245,.22);}
-.pc-icon{width:60px;height:60px;border-radius:16px;background:rgba(0,149,245,.1);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--blue);margin-bottom:20px;transition:background .3s,transform .3s;}
+.pc-icon{width:56px;height:56px;border-radius:14px;background:rgba(0,149,245,.1);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--blue);margin-bottom:18px;transition:background .3s,transform .3s;}
 .pc-inner:hover .pc-icon{background:rgba(0,149,245,.2);transform:scale(1.08);}
 .pc-num{font-size:11px;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.22);margin-bottom:10px;}
 .pc-t{font-family:var(--fb);font-size:clamp(22px,3vw,36px);font-weight:800;line-height:1.12;margin-bottom:14px;letter-spacing:-.03em;}
 .pc-t .hi{color:var(--blue);}
 .pc-tx{font-size:15px;line-height:1.8;color:rgba(255,255,255,.52);}
-.pc-vis{display:flex;align-items:center;justify-content:center;}
-.pc-vis-ring{width:180px;height:180px;border-radius:50%;border:1px solid rgba(0,149,245,.15);display:flex;align-items:center;justify-content:center;}
-.pc-vis-inner{width:120px;height:120px;border-radius:50%;border:1px solid rgba(0,149,245,.22);background:rgba(0,149,245,.06);display:flex;align-items:center;justify-content:center;font-size:42px;color:rgba(0,149,245,.4);}
-.pc-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:28px;}
+.pc-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:22px;}
 .pc-arrow{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;transition:all .3s;}
 .pc-arrow:hover{background:rgba(0,149,245,.15);border-color:rgba(0,149,245,.4);color:var(--white);}
 .pc-dots{display:flex;gap:8px;align-items:center;}
 .pc-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);transition:all .3s;cursor:pointer;}
 .pc-dot.on{width:22px;border-radius:4px;background:var(--blue);}
-@media(max-width:900px){#pillars{padding:80px 24px;}.pc-inner{grid-template-columns:1fr;gap:28px;}.pc-vis{display:none;}}
+/* Image gallery — right column
+   object-fit:contain shows the FULL poster, no cropping
+   background matches dark theme so letterboxing looks intentional */
+.pc-gallery-wrap{
+  position:relative;border-radius:16px;overflow:hidden;
+  background:#03070F;
+  min-height:460px;
+  display:flex;align-items:center;
+}
+.pc-g-track{
+  display:flex;width:100%;
+  transition:transform .55s cubic-bezier(.16,1,.3,1);
+}
+.pc-g-track img{
+  flex:0 0 100%;width:100%;
+  max-height:520px;
+  object-fit:contain;        /* ← full image visible, no cropping */
+  object-position:center;
+  cursor:pointer;            /* click to open lightbox */
+  transition:opacity .3s;
+  display:block;
+}
+.pc-g-track img:hover{opacity:.88;}
+.pcg-arrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(3,7,15,.78);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,.85);cursor:pointer;transition:all .25s;z-index:3;}
+.pcg-arrow:hover{background:rgba(0,149,245,.65);border-color:var(--blue);}
+.pcg-arrow.pcg-prev{left:10px;}
+.pcg-arrow.pcg-next{right:10px;}
+.pcg-dots-wrap{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:3;}
+.pcg-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:all .3s;}
+.pcg-dot.on{width:18px;border-radius:3px;background:var(--white);}
+.pcg-pause-btn{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(3,7,15,.7);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.75);cursor:pointer;z-index:3;transition:all .25s;}
+.pcg-pause-btn:hover{background:rgba(0,149,245,.55);}
+.pcg-expand-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(3,7,15,.65);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:5px 14px;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .3s;}
+.pc-gallery-wrap:hover .pcg-expand-hint{opacity:1;}
+/* ── LIGHTBOX ── */
+.lb-overlay{position:fixed;inset:0;z-index:1200;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px;}
+.lb-overlay.open{opacity:1;pointer-events:all;}
+.lb-img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px;transform:scale(.94);transition:transform .3s cubic-bezier(.16,1,.3,1);}
+.lb-overlay.open .lb-img{transform:scale(1);}
+.lb-close{position:absolute;top:20px;right:20px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--white);cursor:pointer;transition:all .3s;}
+.lb-close:hover{background:rgba(255,255,255,.2);}
+.lb-prev,.lb-next{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--white);cursor:pointer;transition:all .3s;}
+.lb-prev:hover,.lb-next:hover{background:rgba(0,149,245,.5);}
+.lb-prev{left:20px;}
+.lb-next{right:20px;}
+.lb-counter{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:600;letter-spacing:.12em;color:rgba(255,255,255,.5);}
+/* Mobile */
+@media(max-width:900px){
+  #pillars{padding:80px 24px;}
+  .pc-layout{grid-template-columns:1fr;gap:28px;}
+  /* Show gallery ABOVE text on mobile */
+  .pc-gallery-wrap{order:-1;min-height:320px;}
+  .pc-g-track img{max-height:380px;}
+  .pc-left-col{order:1;}
+}
 
 /* ── SPEAKERS ── */
 #speakers{padding:100px 60px;max-width:1380px;margin:0 auto;}
@@ -219,8 +273,8 @@ nav.sc .n-pill{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1
 .spc:nth-child(4){transition-delay:.2s;}
 .spc:hover{box-shadow:0 20px 50px rgba(0,0,0,.48);border-color:rgba(0,149,245,.22);}
 /* Speaker image container — user places the actual files */
-.sp-img-wrap{width:130px;flex-shrink:0;overflow:hidden;position:relative;background:linear-gradient(145deg,#0A1829,#101F38);}
-.sp-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform .5s;}
+.sp-img-wrap{width:150px;min-height:210px;align-self:stretch;flex-shrink:0;overflow:hidden;position:relative;background:linear-gradient(145deg,#0A1829,#101F38);}
+.sp-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center 10%;display:block;transition:transform .5s;}
 .spc:hover .sp-img-wrap img{transform:scale(1.05);}
 .sp-badge{position:absolute;top:8px;left:8px;background:rgba(5,10,20,.8);backdrop-filter:blur(8px);border:1px solid rgba(0,149,245,.35);border-radius:100px;padding:4px 9px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue2);white-space:nowrap;}
 .sp-info{padding:20px;display:flex;flex-direction:column;justify-content:center;}
@@ -358,6 +412,15 @@ footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,25
 .wa{position:fixed;bottom:28px;right:28px;z-index:600;width:52px;height:52px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:22px;box-shadow:0 4px 20px rgba(37,211,102,.4);animation:bob 3.2s ease-in-out infinite;transition:transform .3s;}
 .wa:hover{animation:none;transform:scale(1.1);}
 @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+@media(max-width:900px){
+  #pillars > div > div[style*="grid-template-columns"]{grid-template-columns:1fr!important;}
+  .pc-gallery-wrap{aspect-ratio:16/9;}
+}
+
+.field-err{border-color:rgba(230,80,80,.6)!important;background:rgba(230,80,80,.04)!important;}
+.err-msg{font-size:11px;color:#FF6B6B;margin-top:5px;padding-left:2px;display:none;}
+.err-msg.show{display:block;}
 </style>
 </head>
 <body>
@@ -418,7 +481,7 @@ footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,25
     </div>
     <div class="h-ctas">
       <button class="btn-p" onclick="openModal()"><i class="fas fa-ticket-alt"></i>Get Your Ticket</button>
-      <a href="https://chat.whatsapp.com/F6aXCT0hxrzAaWEv1CfAn1?mode=gi_t" target="_blank" class="btn-s"><i class="fab fa-whatsapp"></i>Join WhatsApp Group</a>
+      <a href="https://wa.me/237675178701" target="_blank" class="btn-s"><i class="fab fa-whatsapp"></i>Send Proof of Payment</a>
     </div>
   </div>
 
@@ -489,42 +552,66 @@ footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,25
     <div class="s-lbl" style="justify-content:center;">Why Attend</div>
     <h2 class="sec-t">Three Reasons to Be in the Room</h2>
   </div>
+
   <div class="pillar-carousel rv">
-    <div class="pc-viewport">
-      <div class="pc-track" id="pcTrack">
-        <div class="pc-slide"><div class="pc-inner">
-          <div>
-            <div class="pc-icon"><i class="fas fa-compass"></i></div>
-            <div class="pc-num">01 / 03</div>
-            <h3 class="pc-t">Discover <span class="hi">New Opportunities</span></h3>
-            <p class="pc-tx">Opportunities are not always announced. They show up in conversations — in rooms filled with the right people. This is that room. Come ready to discover what becomes possible when you move beyond the profile.</p>
+    <div class="pc-layout">
+
+      <!-- LEFT: text slides carousel -->
+      <div class="pc-left-col">
+        <div class="pc-viewport">
+          <div class="pc-track" id="pcTrack">
+            <div class="pc-slide">
+              <div class="pc-inner">
+                <div class="pc-icon"><i class="fas fa-compass"></i></div>
+                <div class="pc-num">01 / 03</div>
+                <h3 class="pc-t">Discover <span class="hi">New Opportunities</span></h3>
+                <p class="pc-tx">Opportunities are not always announced. They show up in conversations — in rooms filled with the right people. This is that room. Come ready to discover what becomes possible when you move beyond the profile.</p>
+              </div>
+            </div>
+            <div class="pc-slide">
+              <div class="pc-inner">
+                <div class="pc-icon"><i class="fas fa-handshake"></i></div>
+                <div class="pc-num">02 / 03</div>
+                <h3 class="pc-t">Build Meaningful <span class="hi">Connections</span></h3>
+                <p class="pc-tx">Not every connection changes your life. But the right one can. This is where those right ones happen — face to face, not profile to profile. Every person in that room is a potential partner, mentor, or collaborator.</p>
+              </div>
+            </div>
+            <div class="pc-slide">
+              <div class="pc-inner">
+                <div class="pc-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="pc-num">03 / 03</div>
+                <h3 class="pc-t">Learn From <span class="hi">The Right People</span></h3>
+                <p class="pc-tx">Sitting in a room with people who have actually built something, failed, and learned — that changes how you think and move. Information is everywhere. Wisdom from lived experience is rare. Come get some.</p>
+              </div>
+            </div>
           </div>
-          <div class="pc-vis"><div class="pc-vis-ring"><div class="pc-vis-inner"><i class="fas fa-lightbulb"></i></div></div></div>
-        </div></div>
-        <div class="pc-slide"><div class="pc-inner">
-          <div>
-            <div class="pc-icon"><i class="fas fa-handshake"></i></div>
-            <div class="pc-num">02 / 03</div>
-            <h3 class="pc-t">Build Meaningful <span class="hi">Connections</span></h3>
-            <p class="pc-tx">Not every connection changes your life. But the right one can. This is where those right ones happen — face to face, not profile to profile. Every person in that room is a potential partner, mentor, or collaborator.</p>
-          </div>
-          <div class="pc-vis"><div class="pc-vis-ring"><div class="pc-vis-inner"><i class="fas fa-network-wired"></i></div></div></div>
-        </div></div>
-        <div class="pc-slide"><div class="pc-inner">
-          <div>
-            <div class="pc-icon"><i class="fas fa-graduation-cap"></i></div>
-            <div class="pc-num">03 / 03</div>
-            <h3 class="pc-t">Learn From <span class="hi">The Right People</span></h3>
-            <p class="pc-tx">Sitting in a room with people who have actually built something, failed, and learned — that changes how you think and move. Information is everywhere. Wisdom from lived experience is rare. Come get some.</p>
-          </div>
-          <div class="pc-vis"><div class="pc-vis-ring"><div class="pc-vis-inner"><i class="fas fa-brain"></i></div></div></div>
-        </div></div>
+        </div>
+        <div class="pc-nav">
+          <div class="pc-arrow" id="pcPrev"><i class="fas fa-chevron-left"></i></div>
+          <div class="pc-dots" id="pcDots"></div>
+          <div class="pc-arrow" id="pcNext"><i class="fas fa-chevron-right"></i></div>
+        </div>
       </div>
-    </div>
-    <div class="pc-nav">
-      <div class="pc-arrow" id="pcPrev"><i class="fas fa-chevron-left"></i></div>
-      <div class="pc-dots" id="pcDots"></div>
-      <div class="pc-arrow" id="pcNext"><i class="fas fa-chevron-right"></i></div>
+
+      <!-- RIGHT: image gallery
+           • Images use object-fit:contain — full poster shown, nothing cropped
+           • Click any image to open fullscreen lightbox
+           • Auto-plays, pauses on hover, pause button top-right
+           • Add more images: copy an <img> line and change the filename
+      -->
+      <div class="pc-gallery-wrap" id="pcGallery">
+        <div class="pc-g-track" id="pcGTrack">
+          <img src="images/IMG-20260421-WA0009.jpg" alt="LinkedIn Locals Bamenda flyer">
+          <img src="images/IMG-20260421-WA0012.jpg" alt="LinkedIn Locals Bamenda flyer">
+          <!-- ADD MORE: <img src="images/YOUR_FLYER.jpg" alt="LinkedIn Locals event"> -->
+        </div>
+        <button class="pcg-arrow pcg-prev" id="pcgPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="pcg-arrow pcg-next" id="pcgNext"><i class="fas fa-chevron-right"></i></button>
+        <div class="pcg-dots-wrap" id="pcgDots"></div>
+        <button class="pcg-pause-btn" id="pcgPause" title="Pause/Resume"><i class="fas fa-pause" id="pcgPauseIcon"></i></button>
+        <div class="pcg-expand-hint"><i class="fas fa-expand-alt" style="margin-right:5px"></i>Click to expand</div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -542,21 +629,49 @@ footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,25
     <strong>Panel Topic:</strong>&nbsp;"Is networking enough? What really creates opportunities today?"
   </div>
   <div class="spg">
+    <!-- Randy King -->
     <div class="spc">
-      <div class="sp-img-wrap"><img src="/images/Randy King.jpg" alt="Kimbi Randy King"><div class="sp-badge">Speaker · Panelist</div></div>
-      <div class="sp-info"><div class="sp-n">Kimbi Randy King</div><div class="sp-r">Speaker · Trainer · Coach</div><div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div></div>
+      <div class="sp-img-wrap">
+        <img src="/images/Randy King.jpg" alt="Kimbi Randy King">
+      </div>
+      <div class="sp-info">
+        <div class="sp-n">Kimbi Randy King</div>
+        <div class="sp-r">Speaker · Trainer · Coach</div>
+        <div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div>
+      </div>
     </div>
+    <!-- Balemba Cecilia -->
     <div class="spc">
-      <div class="sp-img-wrap"><img src="/images/Balemba Cecilia.jpg" alt="Balemba Cecilia Kalang"><div class="sp-badge">Speaker · Panelist</div></div>
-      <div class="sp-info"><div class="sp-n">Balemba Cecilia Kalang</div><div class="sp-r">Graphic Design Tutor · Founder S.A<br>Branding &amp; AI Expert</div><div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div></div>
+      <div class="sp-img-wrap">
+        <img src="/images/Balemba Cecilia.jpg" alt="Balemba Cecilia Kalang">
+      </div>
+      <div class="sp-info">
+        <div class="sp-n">Balemba Cecilia Kalang</div>
+        <div class="sp-r">Graphic Design Tutor · Founder S.A<br>Branding &amp; AI Expert</div>
+        <div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div>
+      </div>
     </div>
+    <!-- Rodrick Kongnyuy -->
     <div class="spc">
-      <div class="sp-img-wrap"><img src="/images/Rodrick Kongnyuy.jpg" alt="Rodrick Kongnyuy"><div class="sp-badge">Speaker · Panelist</div></div>
-      <div class="sp-info"><div class="sp-n">Rodrick Kongnyuy</div><div class="sp-r">Founder &amp; CEO, RicHDaD Estate Services<br>UN Junior Senator &amp; Mentor</div><div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div></div>
+      <div class="sp-img-wrap">
+        <img src="/images/Rodrick Kongnyuy.jpg" alt="Rodrick Kongnyuy" style="object-position:center 25%;">
+      </div>
+      <div class="sp-info">
+        <div class="sp-n">Rodrick Kongnyuy</div>
+        <div class="sp-r">Founder &amp; CEO, RicHDaD Estate Services<br>UN Junior Senator &amp; Mentor</div>
+        <div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div>
+      </div>
     </div>
+    <!-- Gudwin Nugang -->
     <div class="spc">
-      <div class="sp-img-wrap"><img src="/images/Gudwin Nugang.jpg" alt="Gudwin Nugang Forbang"><div class="sp-badge">Speaker · Panelist</div></div>
-      <div class="sp-info"><div class="sp-n">Mr Gudwin Nugang Forbang</div><div class="sp-r">Speaker · Panelist<br>LinkedIn Locals Bamenda 2026</div><div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div></div>
+      <div class="sp-img-wrap">
+        <img src="/images/Gudwin Nugang.jpg" alt="Mr Gudwin Nugang Forbang">
+      </div>
+      <div class="sp-info">
+        <div class="sp-n">Mr Gudwin Nugang Forbang</div>
+        <div class="sp-r">Speaker · Panelist<br>LinkedIn Locals Bamenda 2026</div>
+        <div class="sp-li"><i class="fas fa-microphone"></i> Speaking at LinkedIn Locals 2026</div>
+      </div>
     </div>
   </div>
 </section>
@@ -616,7 +731,7 @@ footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,25
     </div>
   </div>
   <p class="rv" style="text-align:center;margin-top:26px;color:rgba(255,255,255,.22);font-size:13px;position:relative;z-index:2;">
-    Enquiries: <strong style="color:rgba(255,255,255,.4)">+237 653 719 589</strong> &nbsp;·&nbsp; <strong style="color:rgba(255,255,255,.4)">linkedinlocals@gmail.com</strong>
+    Enquiries: <strong style="color:rgba(255,255,255,.4)">+237 675 178 701</strong> &nbsp;·&nbsp; <strong style="color:rgba(255,255,255,.4)">linkedinlocals@gmail.com</strong>
   </p>
 </section>
 
@@ -697,8 +812,7 @@ footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,25
         </select>
       </div>
       <div class="modal-btns">
-        <button class="btn-next" id="step1Btn" onclick="goStep(2)">Continue <i class="fas fa-arrow-right" style="margin-left:4px"></i></button>
-      </div>
+<button class="btn-next" id="step1Btn" onclick="validateStep1()">Continue <i class="fas fa-arrow-right" style="margin-left:4px"></i></button>      </div>
     </div>
 
     <!-- Step 2 -->
@@ -758,17 +872,37 @@ footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,25
       </div>
     </div>
 
-    <!-- Success -->
-    <div class="step" id="stepDone">
-      <div class="modal-success">
-        <div class="suc-icon"><i class="fas fa-check"></i></div>
-        <div class="suc-title">You're In! 🎉</div>
-        <div class="suc-sub" id="sucText">Your registration has been confirmed. Check your email for a confirmation and updates from LinkedIn Locals Bamenda.</div>
-        <a href="https://chat.whatsapp.com/F6aXCT0hxrzAaWEv1CfAn1?mode=gi_t" target="_blank" class="btn-p" style="margin:0 auto;display:inline-flex"><i class="fab fa-whatsapp"></i>Join WhatsApp Group</a>
-        <div style="margin-top:14px"><button onclick="closeModal()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:13px;cursor:pointer;font-family:var(--fs);">Close this window</button></div>
-      </div>
+<!-- Success -->
+<div class="step" id="stepDone">
+  <div class="modal-success">
+    <div class="suc-icon" style="background:rgba(37,211,102,.1);border-color:rgba(37,211,102,.3)"><i class="fab fa-whatsapp" style="color:#25D366"></i></div>
+    <div class="suc-title">Almost There! 📲</div>
+    <div class="suc-sub" id="sucText">
+      Your details have been recorded. To complete your registration, send a screenshot of your MoMo payment confirmation to our WhatsApp below. Your seat will be confirmed once payment is verified.
     </div>
+    <!-- Dynamic WhatsApp link built by JS with pre-filled message -->
+    <a id="waConfirmLink" href="#" target="_blank" class="btn-p" style="margin:0 auto;display:inline-flex;background:#25D366;color:#fff;">
+      <i class="fab fa-whatsapp"></i>Send Payment Screenshot
+    </a>
+    <div style="margin-top:12px;padding:12px 16px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.07);font-size:12px;color:rgba(255,255,255,.45);line-height:1.6;text-align:left;">
+      <strong style="color:rgba(255,255,255,.65)">How to confirm:</strong><br>
+      1. Tap the button above to open WhatsApp.<br>
+      2. Send a screenshot of your MTN MoMo payment confirmation.<br>
+      3. We will confirm your seat within 24 hours.
+    </div>
+    <div style="margin-top:14px"><button onclick="closeModal()" style="background:none;border:none;color:rgba(255,255,255,.3);font-size:13px;cursor:pointer;font-family:var(--fs);">Close this window</button></div>
   </div>
+</div>
+  </div>
+</div>
+
+<!-- ── LIGHTBOX ── -->
+<div class="lb-overlay" id="lbOverlay">
+  <button class="lb-close" id="lbClose"><i class="fas fa-times"></i></button>
+  <button class="lb-prev" id="lbPrev"><i class="fas fa-chevron-left"></i></button>
+  <img class="lb-img" id="lbImg" src="" alt="Event image">
+  <button class="lb-next" id="lbNext"><i class="fas fa-chevron-right"></i></button>
+  <div class="lb-counter" id="lbCounter"></div>
 </div>
 
 <script>
@@ -781,10 +915,10 @@ footer{background:#030810;padding:52px 60px;border-top:1px solid rgba(255,255,25
    {{ticket_price}}, {{event_date}}, {{event_venue}}, {{momo_number}}
 ════════════════════════════════════════════════ */
 const CFG = {
-  formspree  : 'YOUR_FORMSPREE_ID',
-  ejsKey     : 'YOUR_EMAILJS_PUBLIC_KEY',
-  ejsService : 'YOUR_EMAILJS_SERVICE_ID',
-  ejsTemplate: 'YOUR_EMAILJS_TEMPLATE_ID',
+  formspree  : 'movlynjz',
+  ejsKey     : 'hiByjm866hgX_g-gE',
+  ejsService : 'service_qglm8np',
+  ejsTemplate: 'template_yvs893m',
   momo       : '653719589',
   email      : 'linkedinlocals@gmail.com'
 };
@@ -837,7 +971,7 @@ const cObs=new IntersectionObserver(es=>{es.forEach(e=>{
 });},{threshold:.3});
 const sEl=document.getElementById('stats');if(sEl)cObs.observe(sEl);
 
-/* ── PILLARS CAROUSEL ── */
+/* ── PILLARS TEXT CAROUSEL ── */
 let pi=0;
 const pt=document.getElementById('pcTrack'),pd=document.getElementById('pcDots');
 const ps=pt.querySelectorAll('.pc-slide');
@@ -850,6 +984,99 @@ pt.parentElement.addEventListener('mouseenter',()=>clearInterval(pct));
 pt.parentElement.addEventListener('mouseleave',()=>{pct=setInterval(()=>pcGo((pi+1)%ps.length),4200);});
 let ptx=0;pt.addEventListener('touchstart',e=>{ptx=e.touches[0].clientX;},{passive:true});
 pt.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-ptx;if(Math.abs(dx)>40)pcGo(dx<0?(pi+1)%ps.length:(pi-1+ps.length)%ps.length);});
+
+/* ── PILLARS IMAGE GALLERY + LIGHTBOX ── */
+(function(){
+  const gTrack=document.getElementById('pcGTrack');
+  if(!gTrack)return;
+  const imgs=[...gTrack.querySelectorAll('img')];
+  if(!imgs.length)return;
+  const dotsWrap=document.getElementById('pcgDots');
+  const pauseBtn=document.getElementById('pcgPause');
+  const pauseIcon=document.getElementById('pcgPauseIcon');
+  let gi=0,gPaused=false,gTimer;
+
+  /* Build dots */
+  imgs.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='pcg-dot'+(i===0?' on':'');
+    d.onclick=()=>gGo(i);
+    dotsWrap.appendChild(d);
+  });
+
+  function gGo(to){
+    gi=to;
+    gTrack.style.transform=`translateX(-${to*100}%)`;
+    document.querySelectorAll('.pcg-dot').forEach((d,j)=>d.classList.toggle('on',j===to));
+  }
+  function gNext(){gGo((gi+1)%imgs.length);}
+  function startTimer(){if(!gPaused)gTimer=setInterval(gNext,3400);}
+  function stopTimer(){clearInterval(gTimer);}
+  startTimer();
+
+  document.getElementById('pcgPrev').onclick=(e)=>{e.stopPropagation();stopTimer();gGo((gi-1+imgs.length)%imgs.length);startTimer();};
+  document.getElementById('pcgNext').onclick=(e)=>{e.stopPropagation();stopTimer();gGo((gi+1)%imgs.length);startTimer();};
+
+  pauseBtn.onclick=(e)=>{
+    e.stopPropagation();
+    gPaused=!gPaused;
+    pauseIcon.className=gPaused?'fas fa-play':'fas fa-pause';
+    gPaused?stopTimer():startTimer();
+  };
+
+  /* Pause on hover */
+  const gallery=document.getElementById('pcGallery');
+  gallery.addEventListener('mouseenter',()=>stopTimer());
+  gallery.addEventListener('mouseleave',()=>{if(!gPaused)startTimer();});
+
+  /* Touch swipe */
+  let gTx=0;
+  gallery.addEventListener('touchstart',e=>{gTx=e.touches[0].clientX;stopTimer();},{passive:true});
+  gallery.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-gTx;
+    if(Math.abs(dx)>40)gGo(dx<0?(gi+1)%imgs.length:(gi-1+imgs.length)%imgs.length);
+    if(!gPaused)startTimer();
+  });
+
+  /* ── LIGHTBOX ── */
+  const lbOverlay=document.getElementById('lbOverlay');
+  const lbImg=document.getElementById('lbImg');
+  const lbCounter=document.getElementById('lbCounter');
+  let lbIdx=0;
+
+  function lbOpen(idx){
+    lbIdx=idx;
+    lbImg.src=imgs[idx].src;
+    lbCounter.textContent=(idx+1)+' / '+imgs.length;
+    lbOverlay.classList.add('open');
+    document.body.style.overflow='hidden';
+    stopTimer();
+  }
+  function lbClose(){
+    lbOverlay.classList.remove('open');
+    document.body.style.overflow='';
+    if(!gPaused)startTimer();
+  }
+  function lbGoTo(idx){
+    lbIdx=((idx%imgs.length)+imgs.length)%imgs.length;
+    lbImg.src=imgs[lbIdx].src;
+    lbCounter.textContent=(lbIdx+1)+' / '+imgs.length;
+  }
+
+  /* Click image to open */
+  imgs.forEach((img,i)=>img.addEventListener('click',()=>lbOpen(i)));
+
+  document.getElementById('lbClose').onclick=lbClose;
+  document.getElementById('lbPrev').onclick=()=>lbGoTo(lbIdx-1);
+  document.getElementById('lbNext').onclick=()=>lbGoTo(lbIdx+1);
+  lbOverlay.addEventListener('click',e=>{if(e.target===lbOverlay)lbClose();});
+  document.addEventListener('keydown',e=>{
+    if(!lbOverlay.classList.contains('open'))return;
+    if(e.key==='Escape')lbClose();
+    if(e.key==='ArrowLeft')lbGoTo(lbIdx-1);
+    if(e.key==='ArrowRight')lbGoTo(lbIdx+1);
+  });
+})();
 
 /* ── HERO STACKED CARDS ── */
 const cards=[...document.querySelectorAll('.hc')];
@@ -884,6 +1111,46 @@ function goStep(n){
     l.classList.toggle('active',i===n);
   });
   if(n===3)buildSummary();
+}
+
+function validateStep1(){
+  // Clear previous errors
+  ['f-name','f-email','f-phone','f-job'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('field-err');
+    const err=el.parentElement.querySelector('.err-msg');
+    if(err)err.classList.remove('show');
+  });
+
+  const name =document.getElementById('f-name').value.trim();
+  const email=document.getElementById('f-email').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  const job  =document.getElementById('f-job').value.trim();
+  const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  let ok=true;
+
+  function flag(id,msg){
+    const el=document.getElementById(id);
+    el.classList.add('field-err');
+    let err=el.parentElement.querySelector('.err-msg');
+    if(!err){err=document.createElement('div');err.className='err-msg';el.after(err);}
+    err.textContent=msg;err.classList.add('show');
+    ok=false;
+  }
+
+  if(!name)      flag('f-name','Please enter your full name.');
+  if(!email)     flag('f-email','Please enter your email address.');
+  else if(!emailOk) flag('f-email','Please enter a valid email address.');
+  if(!phone)     flag('f-phone','Please enter your phone number.');
+  if(!job)       flag('f-job','Please tell us what you do.');
+
+  if(ok) goStep(2);
+  else{
+    // Scroll to first error inside modal
+    const firstErr=document.querySelector('.modal-box .field-err');
+    if(firstErr)firstErr.scrollIntoView({behavior:'smooth',block:'center'});
+  }
 }
 
 function selTicket(p,n,el){
@@ -940,11 +1207,17 @@ async function submitReg(){
     });}
     catch(e){console.warn('EmailJS:',e);}
   }
+/* Build WhatsApp pre-filled message */
+  const waMsg=encodeURIComponent(
+    `Hi LinkedIn Locals Bamenda! 👋\n\nI just paid for my *${F.tName}* ticket.\n\nName: ${F.name}\nEmail: ${F.email}\nPhone: ${F.phone}\n\nPlease find my MoMo payment screenshot attached. Kindly confirm my seat. Thank you!`
+  );
+  // Direct WhatsApp to the team's phone number (not group link, so message is pre-filled)
+  document.getElementById('waConfirmLink').href=`https://wa.me/237653719589?text=${waMsg}`;
+
   /* Show success */
   goStep('Done');
   document.getElementById('sucText').innerHTML=
-    `Thank you, <strong style="color:var(--white)">${F.name}</strong>! Your <strong style="color:var(--lime)">${F.tName}</strong> registration for LinkedIn Locals Bamenda has been received.<br><br>
-     A confirmation has been sent to <strong style="color:var(--white)">${F.email}</strong>. Join our WhatsApp group to stay fully updated on event details and updates.`;
+    `Thank you, <strong style="color:var(--white)">${F.name}</strong>! Your <strong style="color:var(--lime)">${F.tName}</strong> details have been received. Tap the button below to send your payment screenshot on WhatsApp — your seat will be confirmed once payment is verified.`;
 }
 
 /* ── SMOOTH SCROLL ── */
