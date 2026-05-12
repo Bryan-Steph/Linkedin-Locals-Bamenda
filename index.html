@@ -133,8 +133,30 @@
 </section>
 
 <!-- ── MARQUEE ── -->
-<div class="mq"><div class="mq-t" id="mq"></div></div>
+<!-- ── COUNTDOWN ── -->
+<section id="countdown">
+  <div class="cd-wrap">
+    <div class="cd-left">
+      <div class="cd-eyebrow">Event Countdown</div>
+      <div class="cd-heading">Doors Open In</div>
+      <div class="cd-sub">30 May 2026 · 10:00 AM · Alliance Francais, Bamenda</div>
+    </div>
+    <div class="cd-right">
+      <div class="cd-units">
+        <div class="cd-unit"><div class="cd-num" id="cd-days">00</div><div class="cd-lbl">Days</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><div class="cd-num" id="cd-hours">00</div><div class="cd-lbl">Hours</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><div class="cd-num" id="cd-mins">00</div><div class="cd-lbl">Mins</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><div class="cd-num" id="cd-secs">00</div><div class="cd-lbl">Secs</div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- ── MARQUEE ── -->
+<div class="mq"><div class="mq-t" id="mq"></div></div>
 <!-- ── ABOUT ── -->
 <section id="about">
   <div class="ab-l" id="abl">
@@ -526,12 +548,29 @@
         <div class="pay-row"><span class="pay-k">Ticket</span><span class="pay-v" id="sum-ticket">—</span></div>
         <div class="pay-row"><span class="pay-k">Amount to Pay</span><span class="pay-v lime" id="sum-price">—</span></div>
       </div>
-      <div class="momo-box">
-        <div class="momo-lbl"><i class="fas fa-mobile-alt" style="margin-right:5px"></i>MTN Mobile Money Payment</div>
-        <div class="momo-code" id="momoCode">*126*1*1500*653719589#</div>
-        <div class="momo-note">Dial the code above on your phone — OR tap "Pay Now" to auto-dial. Enter your MoMo PIN when prompted. After payment, click Confirm below.</div>
-      </div>
-      <a class="btn-momo" id="momoLink" href="tel:*126*1*1500*653719589%23"><i class="fas fa-phone-alt"></i>Pay Now via MTN MoMo</a>
+    <!-- Option 1: Copy Number — PRIMARY (easier, works on all SIMs) -->
+<div class="momo-opt momo-opt-p">
+  <div class="momo-opt-lbl"><i class="fas fa-star" style="margin-right:5px"></i>Option 1 — Transfer to MoMo Number</div>
+  <div class="momo-numrow">
+    <div class="momo-numinfo">
+      <div class="momo-numlabel">MoMo Number</div>
+      <div class="momo-numval">653 719 589</div>
+    </div>
+    <button class="momo-copybtn" id="momoCopyBtn" onclick="copyMomoNum()" type="button">
+      <i class="fas fa-copy" id="copyIcon"></i>
+      <span id="copyText">Copy</span>
+    </button>
+  </div>
+  <div class="momo-note">Tap Copy → open your MoMo app or dial *126# → Transfer Money → paste the number → enter the exact amount above → confirm. Then come back and click Confirm below.</div>
+</div>
+
+<!-- Option 2: USSD Code — SECONDARY (may not work on all SIMs) -->
+<div class="momo-opt momo-opt-s">
+  <div class="momo-opt-lbl"><i class="fas fa-phone-alt" style="margin-right:5px"></i>Option 2 — Auto-Dial USSD Code</div>
+  <div class="momo-code" id="momoCode">*126*1*1500*653719589#</div>
+  <div class="momo-note">Dial the code above manually on your dialpad — or tap the button below to auto-dial. Note: this may not work on all SIM types.</div>
+  <a class="btn-momo" id="momoLink" href="tel:*126*1*1500*653719589%23" style="margin-top:10px"><i class="fas fa-phone-alt"></i>Pay Now via MTN MoMo</a>
+</div>
       <button class="btn-confirm" id="confirmBtn" onclick="submitReg()"><i class="fas fa-check-circle"></i> I've Paid — Confirm Registration</button>
       <div class="modal-btns" style="margin-top:10px">
         <button class="btn-back" onclick="goStep(2)"><i class="fas fa-arrow-left" style="margin-right:4px"></i> Back</button>

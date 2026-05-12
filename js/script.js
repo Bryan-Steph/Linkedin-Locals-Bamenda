@@ -311,8 +311,53 @@ async function submitReg(){
   document.getElementById('sucText').innerHTML=
     `Thank you, <strong style="color:var(--white)">${F.name}</strong>! Your <strong style="color:var(--lime)">${F.tName}</strong> details have been received. Tap the button below to send your payment screenshot on WhatsApp — your seat will be confirmed once payment is verified.`;
 }
+/* ── COPY MOMO NUMBER ── */
+function copyMomoNum(){
+  const num='653719589';
+  const btn=document.getElementById('momoCopyBtn');
+  const icon=document.getElementById('copyIcon');
+  const txt=document.getElementById('copyText');
+  function feedback(){
+    btn.classList.add('copied');
+    icon.className='fas fa-check';
+    txt.textContent='Copied!';
+    setTimeout(()=>{btn.classList.remove('copied');icon.className='fas fa-copy';txt.textContent='Copy';},2600);
+  }
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(num).then(feedback).catch(()=>{legacy();});
+  }else{legacy();}
+  function legacy(){
+    const el=document.createElement('textarea');
+    el.value=num;el.style.position='fixed';el.style.opacity='0';
+    document.body.appendChild(el);el.select();
+    try{document.execCommand('copy');}catch(e){}
+    document.body.removeChild(el);feedback();
+  }
+}
 
 /* ── SMOOTH SCROLL ── */
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}});
 });
+
+/* ── COUNTDOWN TIMER ── */
+(function initCountdown(){
+  // 30 May 2026, 10:00 AM Cameroon Standard Time (WAT = UTC+1)
+  const target=new Date('2026-05-30T10:00:00+01:00').getTime();
+  const d=document.getElementById('cd-days');
+  const h=document.getElementById('cd-hours');
+  const m=document.getElementById('cd-mins');
+  const s=document.getElementById('cd-secs');
+  if(!d)return;
+  function pad(n){return String(n).padStart(2,'0');}
+  function tick(){
+    const diff=target-Date.now();
+    if(diff<=0){d.textContent=h.textContent=m.textContent=s.textContent='00';return;}
+    d.textContent=pad(Math.floor(diff/86400000));
+    h.textContent=pad(Math.floor((diff%86400000)/3600000));
+    m.textContent=pad(Math.floor((diff%3600000)/60000));
+    s.textContent=pad(Math.floor((diff%60000)/1000));
+  }
+  tick();
+  setInterval(tick,1000);
+})();
