@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Badge — LinkedIn Locals Bamenda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,200..900;1,9..40,200..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ═══════════════════════ TOKENS ═══════════════════════ */
+:root {
+  --blue:  #0095F5;
+  --lime:  #84F52A;
+  --dark:  #020810;
+  --dark2: #050D1A;
+  --dark3: #0A1528;
+  --white: #FFFFFF;
+  --fb: 'Bricolage Grotesque', sans-serif;
+  --fs: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--lime); border-radius: 3px; }
+body {
+  font-family: var(--fs);
+  background: var(--dark);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+a { text-decoration: none; color: inherit; }
+img { display: block; }
+
+/* ═══════════════════════ AMBIENT ═══════════════════════ */
+.orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  animation: float 13s ease-in-out infinite;
+}
+.ob1 { width: 520px; height: 520px; background: rgba(0,149,245,.14); top: -130px; right: -90px; }
+.ob2 { width: 360px; height: 360px; background: rgba(132,245,42,.07); bottom: 40px; left: -70px; animation-delay: -6.5s; }
+.ob3 { width: 220px; height: 220px; background: rgba(0,100,240,.05); top: 50%; right: 15%; animation-delay: -3s; }
+@keyframes float {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50%      { transform: translate(14px,-22px) scale(1.04); }
+}
+
+/* ═══════════════════════ NAV ═══════════════════════ */
+nav {
+  position: fixed;
+  top: 12px; left: 16px; right: 16px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 20px;
+  background: rgba(2,8,16,.9);
+  backdrop-filter: blur(28px);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  box-shadow: 0 6px 28px rgba(0,0,0,.45);
+}
+.n-logo { height: 36px; object-fit: contain; }
+.n-pill {
+  font-family: var(--fb);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--lime);
+  background: rgba(132,245,42,.1);
+  border: 1px solid rgba(132,245,42,.24);
+  padding: 5px 14px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.n-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+  white-space: nowrap;
+  transition: color .25s;
+}
+.n-back:hover { color: var(--white); }
+
+/* ═══════════════════════ PAGE GRID ═══════════════════════ */
+.page {
+  position: relative;
+  z-index: 2;
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 108px 40px 90px;
+  display: grid;
+  grid-template-columns: 1fr 1.08fr;
+  gap: 68px;
+  align-items: start;
+}
+
+/* ═══════════════════════ FORM COLUMN ═══════════════════════ */
+.fc-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fb);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 18px;
+}
+.fc-eyebrow::before { content:''; display:block; width:28px; height:2px; background:var(--lime); border-radius:2px; }
+
+.fc-title {
+  font-family: var(--fb);
+  font-size: clamp(26px, 3.4vw, 46px);
+  font-weight: 900;
+  line-height: 1.04;
+  letter-spacing: -.04em;
+  margin-bottom: 14px;
+}
+.accent { color: var(--blue); }
+
+.fc-sub {
+  font-size: 14px;
+  line-height: 1.78;
+  color: rgba(255,255,255,.42);
+  margin-bottom: 38px;
+}
+
+/* upload */
+.fg { margin-bottom: 20px; }
+.fl {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.32);
+  margin-bottom: 9px;
+}
+.fl-req { color: var(--lime); }
+
+.photo-zone {
+  width: 100%;
+  aspect-ratio: 4/5;
+  background: rgba(255,255,255,.025);
+  border: 2px dashed rgba(255,255,255,.1);
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .3s, background .3s;
+}
+.photo-zone:hover { border-color: rgba(0,149,245,.4); background: rgba(0,149,245,.03); }
+.photo-zone.filled { border-style: solid; border-color: rgba(132,245,42,.32); }
+
+.pu-icon {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: rgba(0,149,245,.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  color: var(--blue);
+  transition: transform .3s;
+}
+.photo-zone:hover .pu-icon { transform: scale(1.1) rotate(-6deg); }
+.pu-title { font-family: var(--fb); font-size: 15px; font-weight: 700; color: rgba(255,255,255,.48); }
+.pu-hint { font-size: 12px; color: rgba(255,255,255,.22); text-align: center; padding: 0 24px; line-height: 1.5; }
+
+.pu-preview {
+  position: absolute; inset: 0;
+  object-fit: cover; width: 100%; height: 100%;
+}
+.pu-change {
+  position: absolute; bottom: 14px; right: 14px;
+  display: none;
+  align-items: center;
+  gap: 5px;
+  background: rgba(2,8,16,.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 100px;
+  padding: 7px 16px;
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,.58);
+  cursor: pointer;
+  z-index: 2;
+}
+input[type="file"] { display: none; }
+
+/* text inputs */
+.fi {
+  width: 100%;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 13px;
+  padding: 14px 18px;
+  font-size: 15px;
+  color: var(--white);
+  font-family: var(--fs);
+  outline: none;
+  transition: border-color .3s, background .3s;
+}
+.fi:focus { border-color: rgba(0,149,245,.5); background: rgba(0,149,245,.04); }
+.fi::placeholder { color: rgba(255,255,255,.18); }
+
+/* buttons */
+.btns { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+
+.btn-gen {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 17px;
+  background: var(--lime);
+  color: var(--dark);
+  font-family: var(--fb); font-weight: 800; font-size: 15px;
+  border: none; border-radius: 100px; cursor: pointer;
+  transition: all .3s;
+}
+.btn-gen:not(:disabled) { animation: btnPulse 3s ease-in-out infinite; }
+.btn-gen:hover:not(:disabled) {
+  background: #91FF33;
+  box-shadow: 0 14px 38px rgba(132,245,42,.38);
+  transform: translateY(-2px);
+  animation: none;
+}
+.btn-gen:disabled { opacity:.33; cursor:not-allowed; }
+@keyframes btnPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(132,245,42,0); }
+  50%      { box-shadow: 0 0 0 10px rgba(132,245,42,.1); }
+}
+
+.btn-dl {
+  display: none;
+  align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 16px;
+  background: transparent;
+  color: var(--white);
+  font-family: var(--fb); font-weight: 600; font-size: 14px;
+  border: 1.5px solid rgba(255,255,255,.14);
+  border-radius: 100px; cursor: pointer;
+  transition: all .3s;
+}
+.btn-dl.show { display: flex; }
+.btn-dl:hover { border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.05); }
+
+/* tip */
+.tip {
+  margin-top: 24px;
+  padding: 16px 20px;
+  background: rgba(0,149,245,.04);
+  border: 1px solid rgba(0,149,245,.11);
+  border-radius: 15px;
+}
+.tip p { font-size: 12.5px; color: rgba(255,255,255,.38); line-height: 1.74; }
+.tip-bold { color: rgba(255,255,255,.58) !important; font-weight: 600; }
+.tip-tag  { color: var(--blue); font-weight: 600; }
+.tip-hash { color: var(--lime); font-weight: 600; }
+
+/* ═══════════════════════ PREVIEW COLUMN ═══════════════════════ */
+.preview-col { position: sticky; top: 110px; }
+.pc-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.pc-label { font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.28); }
+.pc-res   { font-size: 11px; color: rgba(255,255,255,.18); }
+
+.canvas-wrap {
+  width: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow: 0 28px 70px rgba(0,0,0,.65), 0 0 0 1px rgba(132,245,42,.04);
+  background: var(--dark);
+}
+canvas { width: 100%; height: auto; display: block; }
+
+.pc-note { margin-top: 13px; font-size: 12px; color: rgba(255,255,255,.2); line-height: 1.6; text-align: center; }
+
+/* ═══════════════════════ RESPONSIVE ═══════════════════════ */
+@media (max-width: 900px) {
+  .page { grid-template-columns: 1fr; padding: 100px 20px 80px; gap: 44px; }
+  .preview-col { position: static; }
+  .n-pill { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient orbs -->
+<div class="orbs"><div class="orb ob1"></div><div class="orb ob2"></div><div class="orb ob3"></div></div>
+
+<!-- ✏️ LOGO — Just add your src="" here. Both the nav and the card will use it automatically. -->
+<img id="brandLogo" src="./images/logo.png" alt="LinkedIn Locals Bamenda" style="display:none">
+
+<!-- Nav -->
+<nav>
+  <img id="navLogo" class="n-logo" src="./images/logo.png" alt="LinkedIn Locals">
+  <span class="n-pill">My Badge</span>
+  <a href="index.html" class="n-back"><i class="fas fa-arrow-left"></i> Back to Site</a>
+</nav>
+
+<div class="page">
+
+  <!-- ───────────── FORM ───────────── -->
+  <div class="form-col">
+    <div class="fc-eyebrow">Create Your Badge</div>
+    <h1 class="fc-title">Show up.<br><span class="accent">Before you even arrive.</span></h1>
+    <p class="fc-sub">Upload your photo, add your name and role — get a personalised "I'll Be There" badge to share on WhatsApp, LinkedIn, or Instagram. Let your network know you're part of Bamenda's first-ever LinkedIn Local.</p>
+
+    <!-- Photo -->
+    <div class="fg">
+      <label class="fl">Your Photo <span class="fl-req">*</span></label>
+      <div class="photo-zone" id="photoZone" onclick="document.getElementById('photoInput').click()">
+        <div class="pu-icon"><i class="fas fa-camera"></i></div>
+        <div class="pu-title">Click to upload your photo</div>
+        <div class="pu-hint">Use a clear headshot or portrait photo — square or portrait works best.</div>
+        <img id="photoPreview" class="pu-preview" style="display:none" alt="">
+        <span class="pu-change" id="puChange"><i class="fas fa-redo" style="font-size:10px"></i> Change Photo</span>
+      </div>
+      <input type="file" id="photoInput" accept="image/*">
+    </div>
+
+    <!-- Name -->
+    <div class="fg">
+      <label class="fl" for="f-name">Full Name <span class="fl-req">*</span></label>
+      <input class="fi" id="f-name" type="text" placeholder="e.g. Aisha Ngong" maxlength="38" autocomplete="name">
+    </div>
+
+    <!-- Role -->
+    <div class="fg">
+      <label class="fl" for="f-role">Role / Title <span class="fl-req">*</span></label>
+      <input class="fi" id="f-role" type="text" placeholder="e.g. Software Developer · Entrepreneur" maxlength="52" autocomplete="organization-title">
+    </div>
+
+    <!-- Buttons -->
+    <div class="btns">
+      <button class="btn-gen" id="genBtn" onclick="generateCard()" disabled>
+        <i class="fas fa-wand-magic-sparkles"></i> Generate My Badge
+      </button>
+      <button class="btn-dl" id="dlBtn" onclick="downloadCard()">
+        <i class="fas fa-arrow-down"></i> Download — 1080 × 1080 PNG
+      </button>
+    </div>
+
+    <!-- Share tip -->
+    <div class="tip">
+      <p>
+        <i class="fas fa-share-nodes" style="color:var(--blue);margin-right:8px"></i>
+        <span class="tip-bold">Share your badge!</span> Post it on your WhatsApp Status, LinkedIn, or Instagram.
+        Tag <span class="tip-tag">@linkedinlocals</span> and use
+        <span class="tip-hash">#LinkedInLocalsBamenda</span> — help us fill the room!
+      </p>
+    </div>
+  </div>
+
+  <!-- ───────────── PREVIEW ───────────── -->
+  <div class="preview-col">
+    <div class="pc-bar">
+      <div class="pc-label">Live Preview</div>
+      <div class="pc-res">1080 × 1080 px</div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="cardCanvas" width="1080" height="1080"></canvas>
+    </div>
+    <p class="pc-note"><i class="fas fa-circle-info" style="color:var(--blue);margin-right:5px"></i>Preview updates as you type. Download saves in full resolution.</p>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ═══════════════════════ SCRIPT ═══════════════════════ -->
+<script>
+/* ────────────────────────────────────────────────────────
+   LINKEDIN LOCALS BAMENDA — MY BADGE v2
+   Inspired by the Induction/Oath Taking Ceremony flyer layout
+   ──────────────────────────────────────────────────────── */
+
+const C = { blue:'#0095F5', lime:'#84F52A', dark:'#020810', white:'#FFFFFF' };
+let userPhoto = null;
+
+/* ── Logo sync ──────────────────────────────────────────── */
+const brandLogo = document.getElementById('brandLogo');
+brandLogo.onload = () => {
+  document.getElementById('navLogo').src = brandLogo.src;
+  drawCard();
+};
+
+/* ── Font readiness ─────────────────────────────────────── */
+document.fonts.ready.then(() => drawCard());
+
+/* ── Photo upload ───────────────────────────────────────── */
+document.getElementById('photoInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      userPhoto = img;
+      const prev = document.getElementById('photoPreview');
+      prev.src = ev.target.result;
+      prev.style.display = 'block';
+      const chg = document.getElementById('puChange');
+      chg.style.display = 'flex';
+      document.getElementById('photoZone').classList.add('filled');
+      checkReady(); drawCard();
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ── Live update ────────────────────────────────────────── */
+['f-name','f-role'].forEach(id =>
+  document.getElementById(id).addEventListener('input', () => { checkReady(); drawCard(); })
+);
+
+function checkReady() {
+  const n = document.getElementById('f-name').value.trim();
+  const r = document.getElementById('f-role').value.trim();
+  document.getElementById('genBtn').disabled = !(n && r && userPhoto);
+}
+
+/* ════════════════════════════════════════════════════════════
+   DRAW CARD
+   ════════════════════════════════════════════════════════════ */
+function drawCard() {
+  const canvas = document.getElementById('cardCanvas');
+  const ctx    = canvas.getContext('2d');
+  const W = 1080, H = 1080;
+  canvas.width = W; canvas.height = H;
+
+  const name = document.getElementById('f-name').value.trim() || 'Your Name';
+  const role = document.getElementById('f-role').value.trim() || 'Your Role';
+
+  /* ── 1. Background ─────────────────────────────────────── */
+  const bg = ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,   '#010711');
+  bg.addColorStop(.55, '#030B18');
+  bg.addColorStop(1,   '#020610');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+  /* ── 2. Ghost photo — full bleed, heavily blurred ──────── */
+  if (userPhoto) {
+    ctx.save();
+    ctx.globalAlpha = 0.052;
+    ctx.filter = 'blur(30px)';
+    fillCover(ctx, userPhoto, 0, 0, W, H);
+    ctx.filter = 'none';
+    ctx.restore();
+  }
+
+  /* ── 3. Glow orbs ──────────────────────────────────────── */
+  glow(ctx, W*.78, H*.18, 400, 'rgba(0,149,245,.16)');
+  glow(ctx, W*.14, H*.83, 300, 'rgba(132,245,42,.08)');
+  glow(ctx, W*.5,  H*.5,  240, 'rgba(0,80,200,.055)');
+
+  /* ── 4. Decorative squiggles ───────────────────────────── */
+  squiggle(ctx, W-88, -30, C.lime, .44, 1.15);
+  squiggle(ctx, 44,  H-340, C.blue, .18, .72);
+
+  /* ── 5. Subtle noise grid ──────────────────────────────── */
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255,255,255,.025)';
+  ctx.lineWidth = 1;
+  [W*.27, W*.63].forEach(x => { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); });
+  [H*.22, H*.72].forEach(y => { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); });
+  ctx.restore();
+
+  /* ════════════════════════════════════════════════════════
+     LEFT — PHOTO ZONE
+     ════════════════════════════════════════════════════════ */
+  const PX=56, PY=68, PW=432, PH=810, PR=26;
+
+  if (userPhoto) {
+    /* Shadow / behind-glow */
+    ctx.save();
+    ctx.globalAlpha = .14;
+    ctx.filter = 'blur(22px)';
+    ctx.save(); rr(ctx, PX-10, PY+14, PW, PH, PR); ctx.clip();
+    fillCover(ctx, userPhoto, PX-10, PY+14, PW, PH, .12);
+    ctx.restore();
+    ctx.filter = 'none'; ctx.restore();
+
+    /* Main photo clipped into rectangle */
+    ctx.save(); rr(ctx, PX, PY, PW, PH, PR); ctx.clip();
+    fillCover(ctx, userPhoto, PX, PY, PW, PH, .12);
+    ctx.restore();
+
+    /* Right-edge gradient fade → blend into dark */
+    ctx.save(); rr(ctx, PX, PY, PW, PH, PR); ctx.clip();
+    const gR = ctx.createLinearGradient(PX+PW*.48, 0, PX+PW+6, 0);
+    gR.addColorStop(0, 'rgba(2,7,17,0)');
+    gR.addColorStop(1, 'rgba(2,7,17,.97)');
+    ctx.fillStyle = gR; ctx.fillRect(PX, PY, PW, PH); ctx.restore();
+
+    /* Bottom-edge gradient fade */
+    ctx.save(); rr(ctx, PX, PY, PW, PH, PR); ctx.clip();
+    const gB = ctx.createLinearGradient(0, PY+PH*.58, 0, PY+PH);
+    gB.addColorStop(0, 'rgba(2,7,17,0)');
+    gB.addColorStop(1, 'rgba(2,7,17,.72)');
+    ctx.fillStyle = gB; ctx.fillRect(PX, PY, PW, PH); ctx.restore();
+
+    /* Top-edge fade */
+    ctx.save(); rr(ctx, PX, PY, PW, PH, PR); ctx.clip();
+    const gT = ctx.createLinearGradient(0, PY, 0, PY+PH*.18);
+    gT.addColorStop(0, 'rgba(2,7,17,.55)');
+    gT.addColorStop(1, 'rgba(2,7,17,0)');
+    ctx.fillStyle = gT; ctx.fillRect(PX, PY, PW, PH); ctx.restore();
+  } else {
+    /* Placeholder */
+    ctx.save(); rr(ctx, PX, PY, PW, PH, PR);
+    ctx.fillStyle = 'rgba(255,255,255,.024)'; ctx.fill();
+    ctx.setLineDash([12,9]);
+    ctx.strokeStyle = 'rgba(0,149,245,.2)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = `300 110px 'DM Sans',sans-serif`;
+    ctx.fillStyle = 'rgba(0,149,245,.15)';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('👤', PX+PW/2, PY+PH/2);
+    ctx.restore();
+  }
+
+  /* Photo border ring */
+  ctx.save(); rr(ctx, PX, PY, PW, PH, PR);
+  ctx.strokeStyle = 'rgba(0,149,245,.24)'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.restore();
+
+  /* ════════════════════════════════════════════════════════
+     RIGHT — EVENT PANEL
+     ════════════════════════════════════════════════════════ */
+  const RX  = 534;
+  const RW  = W - RX - 50; /* ≈ 496px */
+
+  /* — Logo — */
+  const logo = document.getElementById('brandLogo');
+  if (logo.src && logo.src !== window.location.href && logo.complete && logo.naturalWidth > 0) {
+    const lh = 66, lw = (logo.naturalWidth/logo.naturalHeight)*lh;
+    ctx.drawImage(logo, RX, 78, Math.min(lw, RW), lh);
+  } else {
+    ctx.save();
+    ctx.font = `800 30px 'Bricolage Grotesque',sans-serif`;
+    ctx.fillStyle = C.white; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText('LinkedIn Locals', RX, 82);
+    ctx.restore();
+  }
+
+  /* — "will be attending" — */
+  ctx.save();
+  ctx.font = `400 21px 'DM Sans',sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,.36)';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('will be attending', RX, 197);
+  ctx.restore();
+
+  /* — "LinkedIn" (white, 900) — */
+  ctx.save();
+  ctx.font = `900 86px 'Bricolage Grotesque',sans-serif`;
+  ctx.fillStyle = C.white;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('LinkedIn', RX, 232);
+  ctx.restore();
+
+  /* — "Locals" (lime, 900) — */
+  ctx.save();
+  ctx.font = `900 86px 'Bricolage Grotesque',sans-serif`;
+  ctx.fillStyle = C.lime;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('Locals', RX, 326);
+  ctx.restore();
+
+  /* — "BAMENDA" pill — */
+  ctx.save();
+  ctx.font = `700 16px 'DM Sans',sans-serif`;
+  const bpW = ctx.measureText('BAMENDA').width + 38, bpH = 35, bpY = 436;
+  rr(ctx, RX, bpY, bpW, bpH, bpH/2);
+  ctx.fillStyle = 'rgba(0,149,245,.13)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,149,245,.4)'; ctx.lineWidth = 1.5; ctx.stroke();
+  ctx.fillStyle = C.blue; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText('BAMENDA', RX+19, bpY+bpH/2);
+  ctx.restore();
+
+  /* — Lime separator line — */
+  const sepY = 500;
+  const lg = ctx.createLinearGradient(RX, 0, RX+RW, 0);
+  lg.addColorStop(0,   C.lime);
+  lg.addColorStop(.65, 'rgba(132,245,42,.28)');
+  lg.addColorStop(1,   'rgba(132,245,42,0)');
+  ctx.strokeStyle = lg; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(RX, sepY); ctx.lineTo(RX+RW, sepY); ctx.stroke();
+
+  /* — Theme — */
+  ctx.save();
+  ctx.font = `italic 500 20px 'DM Sans',sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,.35)';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText('"Beyond The Profile"', RX, 520);
+  ctx.restore();
+
+  /* — User Name — */
+  const nfs = nameFontSize(name);
+  ctx.save();
+  ctx.font = `900 ${nfs}px 'Bricolage Grotesque',sans-serif`;
+  ctx.fillStyle = C.white;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText(trunc(ctx, name, RW), RX, 568);
+  ctx.restore();
+
+  /* — User Role — */
+  const roleY = 568 + nfs + 14;
+  ctx.save();
+  ctx.font = `600 23px 'DM Sans',sans-serif`;
+  ctx.fillStyle = C.blue;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  ctx.fillText(trunc(ctx, role, RW), RX, roleY);
+  ctx.restore();
+
+  /* — "I'LL BE THERE" badge — */
+  const badgeY = roleY + 23 + 34;
+  ctx.save();
+  ctx.font = `900 50px 'Bricolage Grotesque',sans-serif`;
+  const btw = ctx.measureText("I'LL BE THERE").width;
+  const bW  = Math.min(btw + 56, RW - 2), bH = 76;
+  rr(ctx, RX, badgeY, bW, bH, 16);
+  ctx.fillStyle = 'rgba(132,245,42,.1)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(132,245,42,.52)'; ctx.lineWidth = 2; ctx.stroke();
+  const tg = ctx.createLinearGradient(RX, 0, RX+bW, 0);
+  tg.addColorStop(0, '#84F52A'); tg.addColorStop(1, '#5FC617');
+  ctx.fillStyle = tg;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText("I'LL BE THERE", RX+bW/2, badgeY+bH/2);
+  ctx.restore();
+
+  /* — Checkmark — */
+  ctx.save();
+  ctx.font = `900 46px 'Bricolage Grotesque',sans-serif`;
+  ctx.fillStyle = C.lime;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText('✓', RX+bW+16, badgeY+bH/2);
+  ctx.restore();
+
+  /* ════════════════════════════════════════════════════════
+     BOTTOM STRIP — Event Details
+     ════════════════════════════════════════════════════════ */
+  const SY = H - 180;
+
+  /* Dark gradient overlay */
+  const sbg = ctx.createLinearGradient(0, SY-50, 0, H);
+  sbg.addColorStop(0,   'rgba(2,7,17,0)');
+  sbg.addColorStop(.32, 'rgba(2,7,17,.96)');
+  sbg.addColorStop(1,   '#020810');
+  ctx.fillStyle = sbg; ctx.fillRect(0, SY-50, W, H-(SY-50));
+
+  /* Strip separator line */
+  const sl = ctx.createLinearGradient(60, 0, W-60, 0);
+  sl.addColorStop(0,   'rgba(0,0,0,0)');
+  sl.addColorStop(.15, 'rgba(0,149,245,.48)');
+  sl.addColorStop(.5,  'rgba(132,245,42,.48)');
+  sl.addColorStop(.85, 'rgba(0,149,245,.48)');
+  sl.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.strokeStyle = sl; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(60, SY); ctx.lineTo(W-60, SY); ctx.stroke();
+
+  /* 3 info pills */
+  const pills = [
+    { icon:'🗓', text:'30th May 2026',            col: C.blue, bg:'rgba(0,149,245,.1)',   bd:'rgba(0,149,245,.3)' },
+    { icon:'🕙', text:'10 AM Prompt',             col: C.lime, bg:'rgba(132,245,42,.08)', bd:'rgba(132,245,42,.3)' },
+    { icon:'📍', text:'Alliance Francais, Bamenda', col: C.blue, bg:'rgba(0,149,245,.1)',  bd:'rgba(0,149,245,.3)' },
+  ];
+  const pY=SY+26, pH=58, gap=16, pW=(W-120-gap*2)/3;
+  pills.forEach((p, i) => {
+    const pX = 60 + i*(pW+gap);
+    rr(ctx, pX, pY, pW, pH, pH/2);
+    ctx.fillStyle = p.bg; ctx.fill();
+    ctx.strokeStyle = p.bd; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.save();
+    ctx.font = `600 17px 'DM Sans',sans-serif`;
+    ctx.fillStyle = p.col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(trunc(ctx, `${p.icon}  ${p.text}`, pW-18), pX+pW/2, pY+pH/2);
+    ctx.restore();
+  });
+
+  /* Hashtag */
+  ctx.save();
+  ctx.font = `500 16px 'DM Sans',sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,.2)';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+  ctx.fillText('#LinkedInLocalsBamenda', W/2, H-16);
+  ctx.restore();
+}
+
+/* ════════════════════════════════════════════════════════════
+   HELPERS
+   ════════════════════════════════════════════════════════════ */
+
+/* fillCover — like object-fit:cover into a rect. yBias 0=center, .1=favor top */
+function fillCover(ctx, img, x, y, w, h, yBias=0) {
+  const iAR = img.naturalWidth/img.naturalHeight;
+  const tAR = w/h;
+  let sx,sy,sw,sh;
+  if (iAR > tAR) { sh=img.naturalHeight; sw=sh*tAR; sx=(img.naturalWidth-sw)/2; sy=0; }
+  else            { sw=img.naturalWidth;  sh=sw/tAR; sx=0; sy=Math.max(0,(img.naturalHeight-sh)*(0.5-yBias)); }
+  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+}
+
+function glow(ctx, x, y, r, col) {
+  const g = ctx.createRadialGradient(x,y,0, x,y,r);
+  g.addColorStop(0, col); g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+}
+
+function squiggle(ctx, x, y, col, alpha, scale=1) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 7*scale; ctx.lineCap='round'; ctx.lineJoin='round';
+  const amp=30*scale, step=56*scale;
+  ctx.beginPath(); ctx.moveTo(x,y);
+  for (let i=0; i<7; i++) {
+    const d = i%2===0?1:-1;
+    ctx.bezierCurveTo(
+      x+d*amp, y+step*i+step*.32,
+      x-d*amp, y+step*i+step*.68,
+      x, y+step*(i+1)
+    );
+  }
+  ctx.stroke(); ctx.restore();
+}
+
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function nameFontSize(name) {
+  const l = name.length;
+  if (l<=13) return 64;
+  if (l<=17) return 54;
+  if (l<=22) return 44;
+  if (l<=28) return 36;
+  return 30;
+}
+
+function trunc(ctx, text, maxW) {
+  if (ctx.measureText(text).width <= maxW) return text;
+  let t = text;
+  while (ctx.measureText(t+'…').width > maxW && t.length>1) t=t.slice(0,-1);
+  return t+'…';
+}
+
+/* ── Actions ───────────────────────────────────────────── */
+function generateCard() {
+  drawCard();
+  document.getElementById('dlBtn').classList.add('show');
+  document.querySelector('.preview-col').scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function downloadCard() {
+  drawCard();
+  const name = document.getElementById('f-name').value.trim().replace(/\s+/g,'_') || 'LinkedIn_Locals';
+  const a = document.createElement('a');
+  a.download = `${name}_IWillBeThere_LinkedInLocals_Bamenda.png`;
+  a.href = document.getElementById('cardCanvas').toDataURL('image/png', 1.0);
+  a.click();
+}
+
+/* ── Boot ──────────────────────────────────────────────── */
+window.addEventListener('load', () => setTimeout(drawCard, 120));
+</script>
+</body>
+</html>
